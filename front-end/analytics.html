@@ -42,7 +42,7 @@
 
       <!-- Left: Chart + Top Events -->
       <div>
-        <div class="chart-card">
+        <div class="chart-card card">
           <h3>Bookings Over Time</h3>
           <!-- SVG line chart — wire to real data via JS -->
           <svg viewBox="0 0 520 230" xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +86,7 @@
         </div>
 
         <!-- Top Events — replace with API response -->
-        <div class="top-events-card">
+        <div class="top-events-card card">
           <h3>Top Events in the Last 30 Days:</h3>
           <div class="top-event-row">
             <span class="te-name">Mountain Lights</span>
@@ -113,7 +113,7 @@
 
       <!-- Right: Stat cards -->
       <div class="stats-col">
-        <div class="stat-card">
+        <div class="stat-card card">
           <h4>Total Bookings by Category</h4>
           <div class="stat-row">
             <select class="select-std" onchange="fetchBookingsByCategory(this.value)">
@@ -128,7 +128,7 @@
           </div>
         </div>
 
-        <div class="stat-card">
+        <div class="stat-card card">
           <h4>Avg. Tickets Sold by Category</h4>
           <div class="stat-row">
             <select class="select-std" onchange="fetchAvgSoldByCategory(this.value)">
