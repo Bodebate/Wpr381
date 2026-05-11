@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventurer — Admin: Events</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=Squada+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav id="main-nav">
+    <a class="nav-logo" href="events.html">
+      <svg viewBox="0 0 34 28" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linejoin="round" stroke-linecap="round">
+        <path d="M2 26 L13 5 L19 14 L23 9 L32 26 Z" fill="currentColor" fill-opacity="0.18"/>
+        <path d="M2 26 L13 5 L19 14 L23 9 L32 26"/>
+        <path d="M23 9 L25 3"/><path d="M25 3 L27 6"/>
+      </svg>
+      Eventurer
+    </a>
+    <ul class="nav-links">
+      <li><a href="bookings.html">Bookings</a></li>
+      <li><a href="enquiries.html">Enquiries</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+      <li class="nav-signout"><a href="index.html">Sign Out</a></li>
+    </ul>
+  </nav>
+
+  <div class="filter-bar">
+    <input class="input-std" style="max-width:145px" type="date">
+    <input class="input-std" style="max-width:145px" type="date">
+    <select class="select-std">
+      <option value="">Select Category</option>
+      <option>Outdoors</option><option>Indoors</option>
+      <option>Quiet</option><option>Crowd</option>
+    </select>
+    <select class="select-std">
+      <option value="">Select Seats</option>
+      <option>Any</option><option>10+</option><option>50+</option>
+    </select>
+  </div>
+
+  <div class="page-content">
+
+    <!-- Create / Edit Form -->
+    <div class="create-panel">
+      <div class="create-row">
+        <input class="input-std" type="text"   placeholder="Event Name"  id="new-title">
+        <input class="input-std" type="date"                             id="new-date">
+        <input class="input-std" type="number" placeholder="Seat Amount" id="new-capacity" min="1">
+        <input class="input-std" type="number" placeholder="Seat Price"  id="new-price" step="0.01" min="0">
+        <label class="btn btn-outline btn-sm" style="cursor:pointer">
+          Upload Img ↑
+          <input type="file" accept="image/*" style="display:none"
+                 onchange="handleImageUpload(event)">
+        </label>
+        <button class="btn btn-yellow btn-sm" onclick="handleCreateEvent(event)">Create</button>
+        <button class="btn btn-outline btn-sm" onclick="handleUpdateEvent(event)">Update ↓</button>
+      </div>
+      <div class="category-section">
+        <span class="label">Category</span>
+        <div class="radio-group">
+          <label class="radio-label"><input type="radio" name="new-cat" value="Quiet">    Quiet</label>
+          <label class="radio-label"><input type="radio" name="new-cat" value="Crowd">    Crowd</label>
+          <label class="radio-label"><input type="radio" name="new-cat" value="Indoors">  Indoors</label>
+          <label class="radio-label"><input type="radio" name="new-cat" value="Outdoors" checked> Outdoors</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin event list — replace with API response -->
+    <div id="admin-events-list">
+      <div class="admin-event-card">
+        <div class="admin-card-actions">
+          <button class="btn btn-yellow btn-sm" onclick="handleEditEvent(event, 1)">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="handleDeleteEvent(event, 1)">Delete</button>
+        </div>
+        <div class="event-img">
+          <div class="event-img-inner" style="min-height:140px">
+            <svg width="52" height="44" viewBox="0 0 34 28" fill="none"
+                 stroke="var(--yellow)" stroke-width="1.4"
+                 stroke-linejoin="round" stroke-linecap="round">
+              <path d="M2 26 L13 5 L19 14 L23 9 L32 26 Z"
+                    fill="var(--yellow)" fill-opacity="0.12"/>
+              <path d="M2 26 L13 5 L19 14 L23 9 L32 26"/>
+            </svg>
+          </div>
+        </div>
+        <div class="event-body">
+          <div class="event-header">
+            <span class="event-title">Mountain Lights</span>
+            <span class="badge badge-yellow">Outdoors</span>
+            <span class="event-seats">89 Seats Left</span>
+          </div>
+          <p class="event-desc">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer luctus blandit
+            volutpat. Curabitur feugiat orci enim, et malesuada nunc cursus vitae.
+          </p>
+          <div class="event-footer">
+            <span class="event-date">11 July 2026 &nbsp;|&nbsp; 08:00 – 18:30</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="basic.js"></script>
+</body>
+</html>

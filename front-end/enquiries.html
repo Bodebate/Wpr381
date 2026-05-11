@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventurer — Admin: Enquiries</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=Squada+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav id="main-nav">
+    <a class="nav-logo" href="events.html">
+      <svg viewBox="0 0 34 28" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linejoin="round" stroke-linecap="round">
+        <path d="M2 26 L13 5 L19 14 L23 9 L32 26 Z" fill="currentColor" fill-opacity="0.18"/>
+        <path d="M2 26 L13 5 L19 14 L23 9 L32 26"/>
+        <path d="M23 9 L25 3"/><path d="M25 3 L27 6"/>
+      </svg>
+      Eventurer
+    </a>
+    <ul class="nav-links">
+      <li><a href="bookings.html">Bookings</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="admin-events.html">Admin</a></li>
+      <li class="nav-signout"><a href="index.html">Sign Out</a></li>
+    </ul>
+  </nav>
+
+  <div class="filter-bar">
+    <input class="input-std" style="max-width:145px" type="date" id="enq-from">
+    <input class="input-std" style="max-width:145px" type="date" id="enq-to">
+    <select class="select-std" id="enq-status-filter" onchange="filterEnquiries()">
+      <option value="">Select Status</option>
+      <option value="open">Open</option>
+      <option value="closed">Closed</option>
+      <option value="pending">Pending</option>
+    </select>
+    <div style="margin-left:auto;display:flex;gap:0.5rem;align-items:center">
+      <button class="btn btn-danger btn-sm"
+              onclick="handleDeleteAllEnquiries(event)">Delete</button>
+      <select class="status-pill" id="bulk-status" onchange="handleBulkStatus(this.value)">
+        <option value="open">Status: OPEN ↓</option>
+        <option value="closed">Status: CLOSED ↓</option>
+        <option value="pending">Status: PENDING ↓</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- Expanded detail panel (toggled by Edit button) -->
+    <div class="enquiry-expanded" id="enquiry-detail-panel">
+      <div class="enq-field"><label>Name</label>        <span id="enq-d-name">—</span></div>
+      <div class="enq-field"><label>Email</label>       <span id="enq-d-email">—</span></div>
+      <div class="enq-field"><label>Subject</label>     <span id="enq-d-subject">—</span></div>
+      <div class="enq-field"><label>Create Date</label> <span id="enq-d-created">—</span></div>
+      <div class="enq-field"><label>Last Update</label> <span id="enq-d-updated">—</span></div>
+      <div class="enq-field"><label>Handled By</label>  <span id="enq-d-handler">—</span></div>
+      <div class="enq-field" style="grid-column:1/-1">
+        <label>Message</label><span id="enq-d-message">—</span>
+      </div>
+    </div>
+
+    <!-- Enquiry list — replace with API response -->
+    <div id="enquiry-list">
+
+      <div class="enquiry-item">
+        <div class="enq-item-group">
+          <span class="key">Subject</span>
+          <span class="val">Event cancellation query</span>
+        </div>
+        <div class="enq-item-group">
+          <span class="key">Last Update</span>
+          <span class="val">14 Jun 2025 14:35</span>
+        </div>
+        <div class="enq-item-group">
+          <span class="key">Status</span>
+          <select class="status-pill" onchange="handleStatusChange(event, 1)">
+            <option value="open" selected>OPEN ↓</option>
+            <option value="closed">CLOSED ↓</option>
+            <option value="pending">PENDING ↓</option>
+          </select>
+        </div>
+        <div class="enq-actions">
+          <button class="btn btn-danger  btn-sm" onclick="handleDeleteEnquiry(event, 1)">Delete</button>
+          <button class="btn btn-outline btn-sm" onclick="handleEditEnquiry(event, 1)">Edit</button>
+        </div>
+      </div>
+
+      <div class="enquiry-item">
+        <div class="enq-item-group">
+          <span class="key">Subject</span>
+          <span class="val">Refund request</span>
+        </div>
+        <div class="enq-item-group">
+          <span class="key">Last Update</span>
+          <span class="val">12 Jun 2025 09:10</span>
+        </div>
+        <div class="enq-item-group">
+          <span class="key">Status</span>
+          <select class="status-pill" onchange="handleStatusChange(event, 2)">
+            <option value="open" selected>OPEN ↓</option>
+            <option value="closed">CLOSED ↓</option>
+            <option value="pending">PENDING ↓</option>
+          </select>
+        </div>
+        <div class="enq-actions">
+          <button class="btn btn-danger  btn-sm" onclick="handleDeleteEnquiry(event, 2)">Delete</button>
+          <button class="btn btn-outline btn-sm" onclick="handleEditEnquiry(event, 2)">Edit</button>
+        </div>
+      </div>
+
+      <div class="enquiry-item">
+        <div class="enq-item-group">
+          <span class="key">Subject</span>
+          <span class="val">Accessibility question</span>
+        </div>
+        <div class="enq-item-group">
+          <span class="key">Last Update</span>
+          <span class="val">10 Jun 2025 17:22</span>
+        </div>
+        <div class="enq-item-group">
+          <span class="key">Status</span>
+          <select class="status-pill" onchange="handleStatusChange(event, 3)">
+            <option value="open" selected>OPEN ↓</option>
+            <option value="closed">CLOSED ↓</option>
+            <option value="pending">PENDING ↓</option>
+          </select>
+        </div>
+        <div class="enq-actions">
+          <button class="btn btn-danger  btn-sm" onclick="handleDeleteEnquiry(event, 3)">Delete</button>
+          <button class="btn btn-outline btn-sm" onclick="handleEditEnquiry(event, 3)">Edit</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="basic.js"></script>
+</body>
+</html>
