@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head><%- include('partials/head', { title: 'Admin: Events' }) %></head>
+<body>
+
+  <%- include('partials/nav', { navLinks: [
+    { href: '/bookings',         label: 'Bookings' },
+    { href: '/admin/enquiries',  label: 'Enquiries' },
+    { href: '/admin/analytics',  label: 'Analytics' },
+    { href: '/logout',           label: 'Sign Out', cls: 'nav-signout' }
+  ]}) %>
+
+  <div class="filter-bar">
+    <input class="input-std" style="max-width:145px" type="date" id="filter-from" />
+    <input class="input-std" style="max-width:145px" type="date" id="filter-to" />
+    <select class="select-std" id="filter-category">
+      <option value="">Select Category</option>
+      <option>Outdoors</option><option>Indoors</option>
+      <option>Quiet</option><option>Crowd</option>
+    </select>
+    <select class="select-std" id="filter-seats">
+      <option value="">Select Seats</option>
+      <option>Any</option><option>10+</option><option>50+</option>
+    </select>
+  </div>
+
+  <div class="page-content">
+
+    <div class="create-panel card">
+      <form action="/admin/events" method="POST">
+        <div class="create-row">
+          <input class="input-std" type="text"   name="title"    placeholder="Event Name" />
+          <input class="input-std" type="date"   name="eventDate" />
+          <input class="input-std" type="number" name="totalCapacity" placeholder="Seat Amount" min="1" />
+          <input class="input-std" type="number" name="price"    placeholder="Seat Price" step="0.01" min="0" />
+          <label class="btn btn-outline btn-sm" style="cursor:pointer">
+            Upload Img ↑
+            <input type="file" accept="image/*" style="display:none" onchange="handleImageUpload(event)" />
+          </label>
+          <button class="btn btn-yellow btn-sm" type="submit">Create</button>
+        </div>
+        <div class="category-section">
+          <span class="label">Category</span>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="categoryId" value="Quiet">    Quiet</label>
+            <label class="radio-label"><input type="radio" name="categoryId" value="Crowd">    Crowd</label>
+            <label class="radio-label"><input type="radio" name="categoryId" value="Indoors">  Indoors</label>
+            <label class="radio-label"><input type="radio" name="categoryId" value="Outdoors" checked> Outdoors</label>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div id="admin-events-list">
+      <% if (events.length === 0) { %>
+        <!-- Placeholder — remove once API is wired -->
+        <div class="admin-event-card card">
+          <div class="admin-card-actions">
+            <form action="/admin/events/1/update" method="POST" style="display:contents">
+              <button class="btn btn-yellow btn-sm" type="submit">Edit</button>
+            </form>
+            <form action="/admin/events/1/delete" method="POST" style="display:contents">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </div>
+          <div class="event-img"><div class="event-img-inner" style="min-height:140px">
+            <svg width="52" height="44" viewBox="0 0 34 28" fill="none"
+                 stroke="var(--yellow)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M2 26 L13 5 L19 14 L23 9 L32 26 Z" fill="var(--yellow)" fill-opacity="0.12"/>
+              <path d="M2 26 L13 5 L19 14 L23 9 L32 26"/>
+            </svg>
+          </div></div>
+          <div class="event-body">
+            <div class="event-header">
+              <span class="event-title">Mountain Lights</span>
+              <span class="badge badge-yellow">Outdoors</span>
+              <span class="event-seats">89 Seats Left</span>
+            </div>
+            <p class="event-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <div class="event-footer"><span class="event-date">11 July 2026 &nbsp;|&nbsp; 08:00 – 18:30</span></div>
+          </div>
+        </div>
+      <% } else { %>
+        <% events.forEach(ev => { %>
+          <div class="admin-event-card card">
+            <div class="admin-card-actions">
+              <form action="/admin/events/<%= ev._id %>/update" method="POST" style="display:contents">
+                <button class="btn btn-yellow btn-sm" type="submit">Edit</button>
+              </form>
+              <form action="/admin/events/<%= ev._id %>/delete" method="POST" style="display:contents">
+                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+              </form>
+            </div>
+            <div class="event-body">
+              <div class="event-header">
+                <span class="event-title"><%= ev.title %></span>
+                <span class="badge badge-yellow"><%= ev.category %></span>
+                <span class="event-seats"><%= ev.availableTickets %> Seats Left</span>
+              </div>
+              <p class="event-desc"><%= ev.description %></p>
+              <div class="event-footer"><span class="event-date"><%= ev.eventDate %></span></div>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+
+  </div>
+
+  <script src="/basic.js"></script>
+</body>
+</html>
