@@ -1,38 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eventurer — Analytics</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Supermercado+One&family=Squada+One&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
+<head><%- include('partials/head', { title: 'Analytics' }) %></head>
 <body>
 
-  <nav id="main-nav">
-    <a class="nav-logo" href="events.html">
-      <svg viewBox="0 0 34 28" fill="none" stroke="currentColor" stroke-width="1.8"
-           stroke-linejoin="round" stroke-linecap="round">
-        <path d="M2 26 L13 5 L19 14 L23 9 L32 26 Z" fill="currentColor" fill-opacity="0.18"/>
-        <path d="M2 26 L13 5 L19 14 L23 9 L32 26"/>
-        <path d="M23 9 L25 3"/><path d="M25 3 L27 6"/>
-      </svg>
-      Eventurer
-    </a>
-    <ul class="nav-links">
-      <li><a href="contact.html">Contact</a></li>
-      <li><a href="events.html">Events</a></li>
-      <li><a href="admin-events.html">Admin</a></li>
-      <li class="nav-signout"><a href="index.html">Sign Out</a></li>
-    </ul>
-  </nav>
+  <%- include('partials/nav', { navLinks: [
+    { href: '/contact',         label: 'Contact' },
+    { href: '/events',          label: 'Events' },
+    { href: '/admin/events',    label: 'Admin' },
+    { href: '/logout',          label: 'Sign Out', cls: 'nav-signout' }
+  ]}) %>
 
   <div class="search-bar">
-    <input class="input-std" type="text" placeholder="Search…" style="max-width:300px">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-         stroke="var(--yellow)" stroke-width="2">
+    <input class="input-std" type="text" placeholder="Search…" style="max-width:300px" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2">
       <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
     </svg>
   </div>
@@ -40,27 +20,21 @@
   <div class="page-content">
     <div class="analytics-wrap">
 
-      <!-- Left: Chart + Top Events -->
       <div>
         <div class="chart-card card">
           <h3>Bookings Over Time</h3>
-          <!-- SVG line chart — wire to real data via JS -->
-          <svg viewBox="0 0 520 230" xmlns="http://www.w3.org/2000/svg"
-               style="width:100%;display:block">
-            <!-- Grid lines -->
+          <svg viewBox="0 0 520 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
             <line x1="44" y1="15"  x2="44"  y2="198" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
             <line x1="44" y1="198" x2="512" y2="198" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
             <line x1="44" y1="153" x2="512" y2="153" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4 3"/>
             <line x1="44" y1="108" x2="512" y2="108" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4 3"/>
             <line x1="44" y1="63"  x2="512" y2="63"  stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4 3"/>
             <line x1="44" y1="15"  x2="512" y2="15"  stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4 3"/>
-            <!-- Y axis labels -->
             <text x="38" y="201" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end" font-family="Squada One,sans-serif">0</text>
             <text x="38" y="156" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end" font-family="Squada One,sans-serif">25</text>
             <text x="38" y="111" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end" font-family="Squada One,sans-serif">50</text>
             <text x="38" y="66"  fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end" font-family="Squada One,sans-serif">75</text>
             <text x="38" y="18"  fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end" font-family="Squada One,sans-serif">100</text>
-            <!-- X axis labels -->
             <text x="44"  y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle" font-family="Squada One,sans-serif">Jan</text>
             <text x="122" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle" font-family="Squada One,sans-serif">Feb</text>
             <text x="200" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle" font-family="Squada One,sans-serif">Mar</text>
@@ -68,14 +42,12 @@
             <text x="356" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle" font-family="Squada One,sans-serif">May</text>
             <text x="434" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle" font-family="Squada One,sans-serif">Jun</text>
             <text x="512" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle" font-family="Squada One,sans-serif">Jul</text>
-            <!-- Data lines -->
             <polyline points="44,165 122,120 200,85 278,130 356,65 434,48 512,58"
                       fill="none" stroke="#E9B63B" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
             <polyline points="44,182 122,158 200,142 278,98  356,118 434,110 512,95"
                       fill="none" stroke="#D62828" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
             <polyline points="44,192 122,178 200,168 278,152 356,140 434,130 512,148"
                       fill="none" stroke="#6ef06e" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
-            <!-- Legend -->
             <rect x="46"  y="22" width="12" height="2.5" fill="#E9B63B" rx="1"/>
             <text x="62"  y="26" fill="rgba(255,255,255,0.55)" font-size="8.5" font-family="Squada One,sans-serif">Outdoors</text>
             <rect x="112" y="22" width="12" height="2.5" fill="#D62828" rx="1"/>
@@ -85,33 +57,26 @@
           </svg>
         </div>
 
-        <!-- Top Events — replace with API response -->
         <div class="top-events-card card">
           <h3>Top Events in the Last 30 Days:</h3>
-          <div class="top-event-row">
-            <span class="te-name">Mountain Lights</span>
-            <span class="text-muted">Event Date: 01 Jul 2025</span>
-            <span class="te-pct">97% Sold</span>
-          </div>
-          <div class="top-event-row">
-            <span class="te-name">Mountain Lights</span>
-            <span class="text-muted">Event Date: 01 Jul 2025</span>
-            <span class="te-pct">97% Sold</span>
-          </div>
-          <div class="top-event-row">
-            <span class="te-name">Mountain Lights</span>
-            <span class="text-muted">Event Date: 01 Jul 2025</span>
-            <span class="te-pct">97% Sold</span>
-          </div>
-          <div class="top-event-row">
-            <span class="te-name">Mountain Lights</span>
-            <span class="text-muted">Event Date: 01 Jul 2025</span>
-            <span class="te-pct">97% Sold</span>
-          </div>
+          <% if (topEvents.length === 0) { %>
+            <div class="top-event-row">
+              <span class="te-name">Mountain Lights</span>
+              <span class="text-muted">Event Date: 01 Jul 2025</span>
+              <span class="te-pct">97% Sold</span>
+            </div>
+          <% } else { %>
+            <% topEvents.forEach(ev => { %>
+              <div class="top-event-row">
+                <span class="te-name"><%= ev.title %></span>
+                <span class="text-muted">Event Date: <%= ev.eventDate %></span>
+                <span class="te-pct"><%= ev.soldPct %>% Sold</span>
+              </div>
+            <% }) %>
+          <% } %>
         </div>
       </div>
 
-      <!-- Right: Stat cards -->
       <div class="stats-col">
         <div class="stat-card card">
           <h4>Total Bookings by Category</h4>
@@ -124,7 +89,7 @@
           </div>
           <div class="stat-row mt-1">
             <span class="text-muted" style="font-size:0.78rem">Bookings:</span>
-            <span class="stat-value" id="stat-bookings">2,387</span>
+            <span class="stat-value" id="stat-bookings"><%= statBookings %></span>
           </div>
         </div>
 
@@ -139,7 +104,7 @@
           </div>
           <div class="stat-row mt-1">
             <span class="text-muted" style="font-size:0.78rem">Avg. Sold:</span>
-            <span class="stat-value" id="stat-avg">41%</span>
+            <span class="stat-value" id="stat-avg"><%= statAvg %>%</span>
           </div>
         </div>
       </div>
@@ -147,6 +112,6 @@
     </div>
   </div>
 
-  <script src="basic.js"></script>
+  <script src="/basic.js"></script>
 </body>
 </html>
