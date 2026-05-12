@@ -60,6 +60,8 @@
             fill="none"
             stroke="var(--dark-red)"
             stroke-width="2"
+            style="cursor: pointer; flex-shrink: 0"
+            onclick="filterEvents()"
           >
             <circle cx="11" cy="11" r="8" />
             <path d="M22 22l-4.35-4.35" />
@@ -125,7 +127,7 @@
             <div class="event-header">
               <span class="badge event-title">Mountain Lights</span>
               <button
-                class="btn btn-yellow btn-sm"
+                class="btn btn-yellow btn-sm underline"
                 onclick="openBooking('Mountain Lights', 17.53, 1)"
               >
                 Book Now!
@@ -160,7 +162,7 @@
             <div class="event-header">
               <span class="badge event-title">Mountain Lights</span>
               <button
-                class="btn btn-yellow btn-sm"
+                class="btn btn-yellow btn-sm underline"
                 onclick="openBooking('Mountain Lights', 17.53, 1)"
               >
                 Book Now!

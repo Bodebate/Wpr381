@@ -160,7 +160,6 @@ body {
 .btn-yellow {
   background: var(--yellow);
   color: var(--black);
-  text-decoration: underline;
 }
 
 .btn-red {
@@ -280,13 +279,24 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  background-color: var(--yellow);
+  padding: var(--padding_1);
+  border-radius: var(--radius_4);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.form-group.vert {
+  align-items: start;
+  flex-direction: column;
 }
 
 .form-group label {
-  font-size: 0.77rem;
-  letter-spacing: 0.12em;
-  color: var(--yellow);
   text-transform: uppercase;
+  color: var(--text-dark);
+  font-size: var(--font_bold);
 }
 
 /* Badges */
@@ -331,6 +341,10 @@ body {
   filter: drop-shadow(20px 20px 2px rgba(0, 0, 0, 0.5));
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 /* ===================================================
    PAGE 1 — AUTH
 =================================================== */
@@ -360,21 +374,6 @@ body {
   justify-content: center;
 }
 
-.form-group {
-  background-color: var(--yellow);
-  padding: var(--padding_1);
-  border-radius: var(--radius_4);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.form-group label {
-  color: var(--text-dark);
-  font-size: var(--font_bold);
-  letter-spacing: normal;
-}
 
 /* ===================================================
    PAGE 2 — EVENTS (user view)
@@ -473,10 +472,10 @@ body {
    PAGE 3 — ADMIN EVENTS
 =================================================== */
 .create-panel {
-  background: var(--card-bg);
+  background: var(--dark-red-semi);
   border: var(--card-border);
   border-radius: var(--radius_4);
-  padding: 1.2rem 1.5rem;
+  padding: var(--padding_content);
   margin-bottom: 1.5rem;
 }
 
@@ -558,9 +557,8 @@ body {
 }
 
 .purchase-label {
-  font-size: 0.76rem;
   letter-spacing: 0.16em;
-  color: var(--yellow);
+  color: var(--bright-red);
   text-transform: uppercase;
   margin-bottom: 0.4rem;
 }
@@ -785,89 +783,184 @@ body {
 /* ===================================================
    PAGE 7 — ADMIN ENQUIRIES
 =================================================== */
+/* Collapse toggle button (used on enquiry panel and create-panel) */
+.panel-toggle {
+  font-family: 'Squada One', sans-serif;
+  font-size: 1rem;
+  font-weight: bold;
+  background: var(--yellow);
+  color: var(--black);
+  border: none;
+  border-radius: var(--radius_4);
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.2s;
+}
+
+.panel-toggle:hover {
+  background: #f5c84a;
+}
+
+.panel-toggle.collapsed {
+  transform: rotate(180deg);
+}
+
+/* Expanded enquiry detail panel */
 .enquiry-expanded {
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--dark-red-semi);
   border: var(--card-border);
   border-radius: var(--radius_4);
-  padding: 1.2rem 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   display: none;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.9rem 1.5rem;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .enquiry-expanded.open {
+  display: flex;
+}
+
+.enq-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(94, 0, 6, 0.12);
+  border-bottom: 2px solid rgba(94, 0, 6, 0.15);
+}
+
+.enq-panel-body {
   display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.enq-message-area {
+  padding: 0.8rem;
+  border-right: 2px solid rgba(94, 0, 6, 0.15);
+}
+
+.enq-message-area textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  resize: none;
+  font-family: 'Squada One', sans-serif;
+  font-size: 0.85rem;
+  background: var(--input-bg);
+  border: none;
+  padding: 0.5rem;
+  color: var(--text-dark);
+  outline: none;
+}
+
+.enq-fields-area {
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
 .enq-field {
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .enq-field label {
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
   color: var(--yellow);
   text-transform: uppercase;
+  white-space: nowrap;
+  min-width: 90px;
+  font-weight: bold;
 }
 
-.enq-field span {
+.enq-field span,
+.enq-field input {
+  flex: 1;
+  font-family: 'Squada One', sans-serif;
   font-size: 0.84rem;
-  color: rgba(255, 255, 255, 0.72);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 0.2rem;
+  background: var(--input-bg);
+  color: var(--text-dark);
+  border: none;
+  padding: 0.28rem 0.5rem;
+  outline: none;
 }
 
+.enq-field input:focus {
+  box-shadow: 0 0 0 2px var(--yellow);
+}
+
+/* Enquiry list rows */
 .enquiry-item {
-  background: rgba(0, 0, 0, 0.32);
-  border-left: 3px solid rgba(233, 182, 59, 0.42);
-  padding: 0.6rem 1rem;
+  background: var(--dark-red);
+  border: var(--card-border-dark);
+  border-radius: var(--radius_4);
+  padding: 0.5rem 0.8rem;
   display: grid;
-  grid-template-columns: 1fr 1fr 200px auto;
-  gap: 0.5rem 1rem;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 0.5rem 0.8rem;
   align-items: center;
-  margin-bottom: 0.45rem;
-  font-size: 0.82rem;
+  margin-bottom: 0.5rem;
 }
 
-.enq-item-group {
+.enq-item-field {
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.enq-item-group .key {
-  font-size: 0.68rem;
-  letter-spacing: 0.09em;
-  color: rgba(255, 255, 255, 0.38);
+.enq-item-field .key {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dark);
   text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--bright-red);
+  color: #fff;
+  padding: 0.22rem 0.55rem;
+  border-radius: var(--radius_4);
 }
 
-.enq-item-group .val {
-  color: rgba(255, 255, 255, 0.8);
+.enq-item-field .val {
+  background: var(--input-bg);
+  color: var(--text-dark);
+  font-size: 0.82rem;
+  padding: 0.22rem 0.5rem;
+  flex: 1;
+  min-width: 80px;
 }
 
 .enq-actions {
   display: flex;
   gap: 0.4rem;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .status-pill {
   font-family: 'Squada One', sans-serif;
-  font-size: 0.76rem;
-  padding: 0.2rem 0.5rem;
+  font-size: var(--font_1);
+  padding: var(--padding_1);
   background: var(--yellow);
   color: var(--black);
   border: none;
+  border-radius: var(--radius_4);
   cursor: pointer;
   letter-spacing: 0.06em;
   appearance: none;
   -webkit-appearance: none;
   outline: none;
 }
+
 
 /* ===================================================
    RESPONSIVE
@@ -912,8 +1005,13 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 
-  .enquiry-expanded {
-    grid-template-columns: 1fr 1fr;
+  .enq-panel-body {
+    grid-template-columns: 1fr;
+  }
+
+  .enq-message-area {
+    border-right: none;
+    border-bottom: 2px solid rgba(94, 0, 6, 0.15);
   }
 }
 
@@ -953,10 +1051,6 @@ body {
   }
 
   .enquiry-item {
-    grid-template-columns: 1fr;
-  }
-
-  .enquiry-expanded {
     grid-template-columns: 1fr;
   }
 
