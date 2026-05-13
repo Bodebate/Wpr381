@@ -89,7 +89,7 @@ exports.createBooking = async (req, res) => {
 
     await Ticket.insertMany(tickets);
 
-    res.status(201).json({redirect:'/bookings',success: true});
+    res.redirect('/bookings');
   } catch (error) {
     console.error('Create booking error:', error);
     res.status(500).send('Booking failed.');
