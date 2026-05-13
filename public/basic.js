@@ -106,6 +106,14 @@ function toggleCreatePanel(id_input, self_input) {
 // BOOKINGS
 // ─────────────────────────────────────────────
 function openBooking(eventName, pricePerTicket, eventId) {
+    const bookingData = {
+        eventId: eventId,
+        eventName: eventName,
+        pricePerTicket: Number(pricePerTicket)
+    };
+    
+    sessionStorage.setItem('booking', JSON.stringify(bookingData));
+
     window.location.href = '/bookings?eventId=' + eventId;
 }
 
@@ -142,13 +150,13 @@ async function handleBookTickets(e) {
         quantity: qty,
         totalAmount: +(qty * (saved.pricePerTicket || 0)).toFixed(2),
     };
+    console.log('[STUB] Book tickets:', payload);
     // TODO: POST /api/bookings  { body: payload }
     const response = await axios.post("/bookings",payload)
     if (response.status === 201){
         window.location.href= response.data.redirect
     }
     // On 201: refresh booking history (GET /api/bookings?userId=)
-    console.log('[STUB] Book tickets:', payload);
 }
 
 // ─────────────────────────────────────────────

@@ -16,7 +16,7 @@ const formatDate = date => {
 exports.getBookings = async (req, res) => {
   try {
     let booking = null;
-
+    console.log(req.query .eventId)
     if (req.query.eventId) {
       const event = await Event.findById(req.query.eventId);
 
@@ -50,9 +50,36 @@ exports.getBookings = async (req, res) => {
 };
 
 exports.createBooking = async (req, res) => {
-  try {
+  try { 
     const eventId = req.body.eventId;
     const quantity = Math.max(1, Number(req.body.quantity));
+/////////////////////////////////
+
+    
+     
+
+      // 1. Log incoming payload variables
+      console.log(`[DEBUG] Booking Attempt - Event ID: "${eventId}", Requested Qty: ${quantity}`);
+
+      // 2. Fetch the target document raw to analyze why findOneAndUpdate fails
+      const rawEvent = await Event.findById(eventId);
+    
+      if (!rawEvent) {
+        console.error(`[DEBUG FAILURE] Event ID "${eventId}" does not exist in the database.`);
+        return res.status(400).send(`Event ID "${eventId}" does not exist in the database.`);
+      }   
+
+      if (rawEvent.status !== 'active') {
+        console.error(`[DEBUG FAILURE] Event found, but status is "${rawEvent.status}" instead of "active".`);
+        return res.status(400).send(`Event is not active (Current status: ${rawEvent.status}).`);
+      }
+
+      if (rawEvent.availableTickets < quantity) {
+      console.error(`[DEBUG FAILURE] Insufficient stock. Available: ${rawEvent.availableTickets}, Requested: ${quantity}`);
+      return res.status(400).send(`Not enough tickets available. (Only ${rawEvent.availableTickets} left).`);
+      }
+    
+    //////////////////////////////////////
 
     const event = await Event.findOneAndUpdate(
       {
