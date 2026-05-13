@@ -145,84 +145,40 @@
 
       <!-- Enquiry list — replace with API response -->
       <div id="enquiry-list">
-        <div class="enquiry-item card">
-          <div class="enq-item-field">
-            <span class="key">Subject:</span>
-            <span class="val">Event cancellation query</span>
-          </div>
-          <div class="enq-item-field">
-            <span class="key">Last Update:</span>
-            <span class="val">14 Jun 2025 14:35</span>
-          </div>
-          <span class="badge badge-yellow">OPEN</span>
-          <div class="enq-actions">
-            <button
-              class="btn btn-danger btn-sm"
-              onclick="handleDeleteEnquiry(event, 1)"
-            >
-              Delete
-            </button>
-            <button
-              class="btn btn-yellow btn-sm"
-              onclick="handleEditEnquiry(event, 1)"
-            >
-              Edit
-            </button>
-          </div>
-        </div>
+  <% if (enquiries.length === 0) { %>
+    <p style="color: var(--muted); padding: 1rem;">No enquiries found.</p>
+  <% } %>
 
-        <div class="enquiry-item card">
-          <div class="enq-item-field">
-            <span class="key">Subject:</span>
-            <span class="val">Refund request</span>
-          </div>
-          <div class="enq-item-field">
-            <span class="key">Last Update:</span>
-            <span class="val">12 Jun 2025 09:10</span>
-          </div>
-          <span class="badge badge-yellow">CLOSED</span>
-          <div class="enq-actions">
-            <button
-              class="btn btn-danger btn-sm"
-              onclick="handleDeleteEnquiry(event, 2)"
-            >
-              Delete
-            </button>
-            <button
-              class="btn btn-yellow btn-sm"
-              onclick="handleEditEnquiry(event, 2)"
-            >
-              Edit
-            </button>
-          </div>
-        </div>
-
-        <div class="enquiry-item card">
-          <div class="enq-item-field">
-            <span class="key">Subject:</span>
-            <span class="val">Accessibility question</span>
-          </div>
-          <div class="enq-item-field">
-            <span class="key">Last Update:</span>
-            <span class="val">10 Jun 2025 17:22</span>
-          </div>
-          <span class="badge badge-yellow">PENDING</span>
-          <div class="enq-actions">
-            <button
-              class="btn btn-danger btn-sm"
-              onclick="handleDeleteEnquiry(event, 3)"
-            >
-              Delete
-            </button>
-            <button
-              class="btn btn-yellow btn-sm"
-              onclick="handleEditEnquiry(event, 3)"
-            >
-              Edit
-            </button>
-          </div>
-        </div>
+  <% enquiries.forEach(enq => { %>
+    <div class="enquiry-item card">
+      <div class="enq-item-field">
+        <span class="key">Subject:</span>
+        <span class="val"><%= enq.subject %></span>
       </div>
+      <div class="enq-item-field">
+        <span class="key">From:</span>
+        <span class="val"><%= enq.name %> — <%= enq.email %></span>
+      </div>
+      <div class="enq-item-field">
+        <span class="key">Last Update:</span>
+        <span class="val"><%= new Date(enq.updatedAt).toLocaleString('en-ZA') %></span>
+      </div>
+
+      <span class="badge <%= enq.status === 'open' ? 'badge-yellow' : enq.status === 'closed' ? 'badge-red' : 'badge-yellow' %>">
+        <%= enq.status.toUpperCase() %>
+      </span>
+
+      <div class="enq-actions">
+        <button class="btn btn-danger btn-sm delete-enq-btn" data-id="<%= enq._id %>">
+          Delete
+        </button>
+        <button class="btn btn-yellow btn-sm edit-enq-btn" data-id="<%= enq._id %>">
+          Edit
+        </button>
+      </div>
+    </div>
+  <% }) %>
+</div>
     </div>
 
     <script src="/basic.js"></script>
