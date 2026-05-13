@@ -1,15 +1,16 @@
 <!doctype html>
 <html lang="en">
-  <head><%- include('partials/head', { title: ' Enquiries' }) %></head>
+  <head><%- include('partials/head', { title: 'Admin: Enquiries' }) %></head>
   <body>
-        <%- include('partials/nav', { navLinks: [
-    { href: '/bookings',        label: 'Bookings' },
-    { href: '/events',          label: 'Events' },
-    { href: '/admin/events',    label: 'Admin' },
-    { href: '/logout',          label: 'Sign Out', cls: 'nav-signout' }
-  ]}) %>
+    <%- include('partials/nav', { navLinks: [
+      { href: '/bookings',       label: 'Bookings' },
+      { href: '/events',         label: 'Events' },
+      { href: '/admin/events',   label: 'Admin' },
+      { href: '/logout',         label: 'Sign Out', cls: 'nav-signout' }
+    ]}) %>
 
     <div class="page-content">
+
       <!-- Search + filter bar -->
       <div class="control-cont card">
         <div class="search-bar">
@@ -20,97 +21,80 @@
             placeholder="Search enquiry subjects…"
             oninput="filterEnquiries()"
           />
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="var(--dark-red)"
-            stroke-width="2"
-            style="cursor: pointer; flex-shrink: 0"
-            onclick="filterEnquiries()"
-          >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="var(--dark-red)" stroke-width="2"
+            style="cursor:pointer;flex-shrink:0" onclick="filterEnquiries()">
             <circle cx="11" cy="11" r="8" />
             <path d="M22 22l-4.35-4.35" />
           </svg>
         </div>
         <div class="filter-bar">
           <label for="enq-from">FROM:</label>
-          <input
-            class="input-std badge badge-red"
-            style="max-width: 145px"
-            type="date"
-            id="enq-from"
-            onchange="filterEnquiries()"
-          />
+          <input class="input-std badge badge-red" style="max-width:145px"
+            type="date" id="enq-from" onchange="filterEnquiries()" />
           <label for="enq-to">TO:</label>
-          <input
-            class="input-std badge badge-red"
-            style="max-width: 145px"
-            type="date"
-            id="enq-to"
-            onchange="filterEnquiries()"
-          />
-          <select
-            class="select-std badge badge-yellow"
-            id="enq-status-filter"
-            onchange="filterEnquiries()"
-          >
+          <input class="input-std badge badge-red" style="max-width:145px"
+            type="date" id="enq-to" onchange="filterEnquiries()" />
+          <select class="select-std badge badge-yellow" id="enq-status-filter"
+            onchange="filterEnquiries()">
             <option value="">Select Status</option>
             <option value="open">Open</option>
             <option value="closed">Closed</option>
             <option value="pending">Pending</option>
           </select>
         </div>
+
+        <!-- Bulk actions -->
+        <div class="filter-bar" style="margin-top:0.5rem">
+          <form action="/admin/enquiries/bulk/status" method="POST" style="display:contents">
+            <input type="hidden" name="status" value="closed" />
+            <button class="btn btn-yellow btn-sm" type="submit"
+              onclick="return confirm('Mark ALL enquiries as closed?')" id="bulk-close-btn">
+              Close All
+            </button>
+          </form>
+          <form action="/admin/enquiries/bulk/delete" method="POST" style="display:contents">
+            <button class="btn btn-danger btn-sm" type="submit"
+              onclick="return confirm('Permanently delete ALL enquiries?')" id="delete-all-enq-btn">
+              Delete All
+            </button>
+          </form>
+        </div>
       </div>
 
-      <!-- Expanded enquiry detail panel (hidden until Edit is clicked) -->
+      <!-- Edit panel — hidden until Edit is clicked -->
       <div class="enquiry-expanded card" id="enquiry-detail-panel">
-        <!-- Body: message left, fields right -->
         <div class="enq-panel-body">
           <div class="enq-message-area">
-            <textarea
-              id="enq-d-message"
-              readonly
-              placeholder="Message content will appear here…"
-            ></textarea>
+            <textarea id="enq-d-message" readonly
+              placeholder="Message content will appear here…"></textarea>
           </div>
 
           <div class="enq-fields-area">
-            <!-- Action header -->
             <div class="enq-panel-header">
-              <label for="status-pill">Status:</label>
-              <select
-                class="status-pill"
-                id="enq-panel-status"
-                name:"status-pill"
-                onchange="handleStatusChange(event, null)"
-              >
-                <option value="open" selected>OPEN</option>
-                <option value="closed">CLOSED</option>
-                <option value="pending">PENDING</option>
-              </select>
-              <button
-                class="btn btn-danger btn-sm"
-                onclick="handleDeleteEnquiry(event, null)"
-              >
-                Delete
-              </button>
-              <button
-                class="btn btn-yellow btn-sm"
-                onclick="handleUpdateEnquiry(event)"
-              >
-                Update
-              </button>
-              <button
-                class="panel-toggle"
-                id="enq-panel-toggle"
-                onclick="toggleEnquiryPanel()"
-                title="Collapse"
-              >
-                /\
-              </button>
+              <!-- Status update form — action set dynamically by JS -->
+              <form id="enq-status-form" method="POST" style="display:contents">
+                <label for="enq-panel-status">Status:</label>
+                <select class="status-pill" id="enq-panel-status" name="status">
+                  <option value="open">OPEN</option>
+                  <option value="closed">CLOSED</option>
+                  <option value="pending">PENDING</option>
+                </select>
+                <button class="btn btn-yellow btn-sm" type="submit">Update</button>
+              </form>
+
+              <!-- Delete form — action set dynamically by JS -->
+              <form id="enq-delete-form" method="POST" style="display:contents">
+                <button class="btn btn-danger btn-sm" type="submit"
+                  onclick="return confirm('Delete this enquiry?')">
+                  Delete
+                </button>
+              </form>
+
+              <button class="panel-toggle" id="enq-panel-toggle"
+                onclick="closePanelEnq()" title="Collapse">/\</button>
             </div>
+
             <div class="enq-field">
               <label>Name:</label>
               <input type="text" id="enq-d-name" readonly />
@@ -124,69 +108,98 @@
               <input type="text" id="enq-d-subject" readonly />
             </div>
             <div class="enq-field">
-              <label>Create Date:</label>
+              <label>Created:</label>
               <input type="text" id="enq-d-created" readonly />
             </div>
             <div class="enq-field">
               <label>Last Update:</label>
               <input type="text" id="enq-d-updated" readonly />
             </div>
-            <div class="enq-field">
-              <label>Handled By:</label>
-              <input
-                type="text"
-                id="enq-d-handler"
-                placeholder="Assign handler…"
-              />
-            </div>
           </div>
         </div>
       </div>
 
-      <!-- Enquiry list — replace with API response -->
+      <!-- Enquiry list -->
       <div id="enquiry-list">
-  <% if (enquiries.length === 0) { %>
-    <p style="color: var(--muted); padding: 1rem;">No enquiries found.</p>
-  <% } %>
+        <% if (!enquiries || enquiries.length === 0) { %>
+          <div class="no-events card"><p>No enquiries found.</p></div>
+        <% } else { %>
+          <% enquiries.forEach(enq => { %>
+            <div class="enquiry-item card"
+              data-id="<%= enq._id %>"
+              data-name="<%= enq.name %>"
+              data-email="<%= enq.email %>"
+              data-subject="<%= enq.subject %>"
+              data-message="<%= enq.message %>"
+              data-status="<%= enq.status %>"
+              data-created="<%= new Date(enq.createdAt).toLocaleString('en-ZA') %>"
+              data-updated="<%= new Date(enq.updatedAt).toLocaleString('en-ZA') %>"
+            >
+              <div class="enq-item-field">
+                <span class="key">Subject:</span>
+                <span class="val"><%= enq.subject %></span>
+              </div>
+              <div class="enq-item-field">
+                <span class="key">From:</span>
+                <span class="val"><%= enq.name %> — <%= enq.email %></span>
+              </div>
+              <div class="enq-item-field">
+                <span class="key">Last Update:</span>
+                <span class="val"><%= new Date(enq.updatedAt).toLocaleString('en-ZA') %></span>
+              </div>
 
-  <% enquiries.forEach(enq => { %>
-    <div class="enquiry-item card">
-      <div class="enq-item-field">
-        <span class="key">Subject:</span>
-        <span class="val"><%= enq.subject %></span>
-      </div>
-      <div class="enq-item-field">
-        <span class="key">From:</span>
-        <span class="val"><%= enq.name %> — <%= enq.email %></span>
-      </div>
-      <div class="enq-item-field">
-        <span class="key">Last Update:</span>
-        <span class="val"><%= new Date(enq.updatedAt).toLocaleString('en-ZA') %></span>
+              <span class="badge <%= enq.status === 'open' ? 'badge-yellow' : enq.status === 'closed' ? 'badge-red' : 'badge-yellow' %>">
+                <%= enq.status.toUpperCase() %>
+              </span>
+
+              <div class="enq-actions">
+                <!-- Delete: plain form POST, no JS needed -->
+                <form action="/admin/enquiries/<%= enq._id %>/delete" method="POST"
+                  style="display:contents">
+                  <button class="btn btn-danger btn-sm" type="submit"
+                    onclick="return confirm('Delete this enquiry?')">
+                    Delete
+                  </button>
+                </form>
+
+                <!-- Edit: opens the detail panel -->
+                <button class="btn btn-yellow btn-sm"
+                  onclick="openEnqPanel(this.closest('.enquiry-item'))">
+                  Edit
+                </button>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
       </div>
 
-      <span class="badge <%= enq.status === 'open' ? 'badge-yellow' : enq.status === 'closed' ? 'badge-red' : 'badge-yellow' %>">
-        <%= enq.status.toUpperCase() %>
-      </span>
-
-      <div class="enq-actions">
-        <button class="btn btn-danger btn-sm delete-enq-btn" data-id="<%= enq._id %>">
-          Delete
-        </button>
-        <button class="btn btn-yellow btn-sm edit-enq-btn" data-id="<%= enq._id %>">
-          Edit
-        </button>
-      </div>
-    </div>
-  <% }) %>
-</div>
     </div>
 
     <script src="/basic.js"></script>
     <script>
-      function toggleEnquiryPanel() {
-        document
-          .getElementById("enquiry-detail-panel")
-          .classList.remove("open");
+      function openEnqPanel(card) {
+        const id = card.dataset.id;
+
+        // Populate read-only fields from data attributes on the card
+        document.getElementById('enq-d-name').value    = card.dataset.name;
+        document.getElementById('enq-d-email').value   = card.dataset.email;
+        document.getElementById('enq-d-subject').value = card.dataset.subject;
+        document.getElementById('enq-d-message').value = card.dataset.message;
+        document.getElementById('enq-d-created').value = card.dataset.created;
+        document.getElementById('enq-d-updated').value = card.dataset.updated;
+        document.getElementById('enq-panel-status').value = card.dataset.status;
+
+        // Point both forms at this enquiry's ID
+        document.getElementById('enq-status-form').action =
+          '/admin/enquiries/' + id + '/status';
+        document.getElementById('enq-delete-form').action =
+          '/admin/enquiries/' + id + '/delete';
+
+        document.getElementById('enquiry-detail-panel').classList.add('open');
+      }
+
+      function closePanelEnq() {
+        document.getElementById('enquiry-detail-panel').classList.remove('open');
       }
     </script>
   </body>
