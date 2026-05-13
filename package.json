@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "wpr381",
   "version": "1.0.0",
   "description": "",
@@ -30,23 +29,3 @@
     "mongoose": "^9.6.2"
   }
 }
-=======
-  "name": "mongodb",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongoose": "^9.6.2"
-  }
-}
->>>>>>> 9e966cf4afc42446b512bbc3971b0289a0e0a1eb
