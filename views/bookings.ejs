@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head><%- include('partials/head', { title: 'Bookings' }) %></head>
+<body>
+
+  <%- include('partials/nav', { navLinks: [
+    { href: '/contact',  label: 'Contact' },
+    { href: '/events',   label: 'Events' },
+    { href: '/logout',   label: 'Sign Out', cls: 'nav-signout' }
+  ]}) %>
+
+  <div class="page-content">
+    <div class="bookings-wrap">
+
+      <div>
+        <div class="purchase-panel card">
+          <div class="purchase-label">Purchase Tickets:</div>
+          <div class="purchase-event-name" id="booking-event-name">
+            <%= booking ? booking.eventName : '—' %>
+          </div>
+          <div class="purchase-row">
+            <span>Price per Ticket:</span>
+            <span id="booking-unit-price">R <%= booking ? booking.pricePerTicket.toFixed(2) : '0.00' %></span>
+          </div>
+          <div class="purchase-row">
+            <span>Amount:</span>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+              <input class="amount-input" type="number" id="ticket-amount" value="1" min="1" oninput="updateTotal()" />
+              <svg id="qty-check" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="#6ef06e" stroke-width="2.5" style="opacity:0;transition:opacity 0.2s">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+          </div>
+          <div class="purchase-total">
+            <span>Total Cost:</span>
+            <span id="booking-total">R 0.00</span>
+          </div>
+          <div class="purchase-actions">
+            <a class="btn btn-outline btn-sm" href="/events">Cancel</a>
+            <form action="/bookings" method="POST" style="display:contents">
+              <input type="hidden" name="eventId"     value="<%= booking ? booking.eventId : '' %>" />
+              <input type="hidden" name="quantity"    id="form-qty" value="1" />
+              <input type="hidden" name="totalAmount" id="form-total" value="0" />
+              <button class="btn btn-yellow btn-sm" type="submit" onclick="syncForm()">Book Tickets ›</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-header">Booking History:</div>
+        <div id="booking-history">
+          <% if (history.length === 0) { %>
+            <!-- Placeholder — remove once API is wired -->
+            <div class="booking-item card">
+              <span class="b-name">Mountain Lights</span>
+              <div><span class="b-key">Event Date</span>    <span class="b-val">01 Jul 2025</span></div>
+              <div><span class="b-key">Purchase Date</span> <span class="b-val">14 Jun 2025 14:35</span></div>
+              <div><span class="b-key">Tickets</span>       <span class="b-val">2</span></div>
+              <div><span class="b-key">Total Cost</span>    <span class="b-val">R 407.01</span></div>
+            </div>
+          <% } else { %>
+            <% history.forEach(b => { %>
+              <div class="booking-item card">
+                <span class="b-name"><%= b.eventTitle %></span>
+                <div><span class="b-key">Event Date</span>    <span class="b-val"><%= b.eventDate %></span></div>
+                <div><span class="b-key">Purchase Date</span> <span class="b-val"><%= b.createdAt %></span></div>
+                <div><span class="b-key">Tickets</span>       <span class="b-val"><%= b.quantity %></span></div>
+                <div><span class="b-key">Total Cost</span>    <span class="b-val">R <%= b.totalAmount.toFixed(2) %></span></div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/basic.js"></script>
+  <script>
+    function syncForm() {
+      const qty = parseInt(document.getElementById('ticket-amount').value) || 1;
+      const price = parseFloat(document.getElementById('booking-unit-price').textContent.replace('R ', '')) || 0;
+      document.getElementById('form-qty').value   = qty;
+      document.getElementById('form-total').value = (qty * price).toFixed(2);
+    }
+  </script>
+</body>
+</html>

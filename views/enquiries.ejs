@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head><%- include('partials/head', { title: 'Admin: Enquiries' }) %></head>
+<body>
+
+  <%- include('partials/nav', { navLinks: [
+    { href: '/bookings',        label: 'Bookings' },
+    { href: '/events',          label: 'Events' },
+    { href: '/admin/events',    label: 'Admin' },
+    { href: '/logout',          label: 'Sign Out', cls: 'nav-signout' }
+  ]}) %>
+
+  <div class="filter-bar">
+    <input class="input-std" style="max-width:145px" type="date" id="enq-from" />
+    <input class="input-std" style="max-width:145px" type="date" id="enq-to" />
+    <select class="select-std" id="enq-status-filter" onchange="filterEnquiries()">
+      <option value="">Select Status</option>
+      <option value="open">Open</option>
+      <option value="closed">Closed</option>
+      <option value="pending">Pending</option>
+    </select>
+    <div style="margin-left:auto;display:flex;gap:0.5rem;align-items:center">
+      <form action="/admin/enquiries/bulk/delete" method="POST" style="display:contents">
+        <button class="btn btn-danger btn-sm" type="submit"
+                onclick="return confirm('Delete ALL visible enquiries?')">Delete</button>
+      </form>
+      <form action="/admin/enquiries/bulk/status" method="POST" style="display:contents">
+        <select class="status-pill" name="status" onchange="this.form.submit()">
+          <option value="open">Status: OPEN ↓</option>
+          <option value="closed">Status: CLOSED ↓</option>
+          <option value="pending">Status: PENDING ↓</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="enquiry-expanded card" id="enquiry-detail-panel">
+      <div class="enq-field"><label>Name</label>        <span id="enq-d-name">—</span></div>
+      <div class="enq-field"><label>Email</label>       <span id="enq-d-email">—</span></div>
+      <div class="enq-field"><label>Subject</label>     <span id="enq-d-subject">—</span></div>
+      <div class="enq-field"><label>Create Date</label> <span id="enq-d-created">—</span></div>
+      <div class="enq-field"><label>Last Update</label> <span id="enq-d-updated">—</span></div>
+      <div class="enq-field"><label>Handled By</label>  <span id="enq-d-handler">—</span></div>
+      <div class="enq-field" style="grid-column:1/-1">
+        <label>Message</label><span id="enq-d-message">—</span>
+      </div>
+    </div>
+
+    <div id="enquiry-list">
+      <% if (enquiries.length === 0) { %>
+        <!-- Placeholder — remove once API is wired -->
+        <div class="enquiry-item card">
+          <div class="enq-item-group"><span class="key">Subject</span><span class="val">Event cancellation query</span></div>
+          <div class="enq-item-group"><span class="key">Last Update</span><span class="val">14 Jun 2025 14:35</span></div>
+          <div class="enq-item-group">
+            <span class="key">Status</span>
+            <form action="/admin/enquiries/1/status" method="POST" style="display:contents">
+              <select class="status-pill" name="status" onchange="this.form.submit()">
+                <option value="open" selected>OPEN ↓</option>
+                <option value="closed">CLOSED ↓</option>
+                <option value="pending">PENDING ↓</option>
+              </select>
+            </form>
+          </div>
+          <div class="enq-actions">
+            <form action="/admin/enquiries/1/delete" method="POST" style="display:contents">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+            <button class="btn btn-outline btn-sm" onclick="handleEditEnquiry(event, 1)">Edit</button>
+          </div>
+        </div>
+      <% } else { %>
+        <% enquiries.forEach(enq => { %>
+          <div class="enquiry-item card">
+            <div class="enq-item-group"><span class="key">Subject</span><span class="val"><%= enq.subject %></span></div>
+            <div class="enq-item-group"><span class="key">Last Update</span><span class="val"><%= enq.updatedAt %></span></div>
+            <div class="enq-item-group">
+              <span class="key">Status</span>
+              <form action="/admin/enquiries/<%= enq._id %>/status" method="POST" style="display:contents">
+                <select class="status-pill" name="status" onchange="this.form.submit()">
+                  <option value="open"    <%= enq.status === 'open'    ? 'selected' : '' %>>OPEN ↓</option>
+                  <option value="closed"  <%= enq.status === 'closed'  ? 'selected' : '' %>>CLOSED ↓</option>
+                  <option value="pending" <%= enq.status === 'pending' ? 'selected' : '' %>>PENDING ↓</option>
+                </select>
+              </form>
+            </div>
+            <div class="enq-actions">
+              <form action="/admin/enquiries/<%= enq._id %>/delete" method="POST" style="display:contents">
+                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+              </form>
+              <button class="btn btn-outline btn-sm" onclick="handleEditEnquiry(event, '<%= enq._id %>')">Edit</button>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+
+  <script src="/basic.js"></script>
+</body>
+</html>
