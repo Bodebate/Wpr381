@@ -65,9 +65,12 @@
             id="filter-seats"
           >
             <option value="">Select Seats</option>
-            <option value="any">Any Availability</option>
+            <option value="0">Any Availability</option>
+            <option value="1">1+ Seats</option>
+            <option value="5">5+ Seats</option>
             <option value="10">10+ Seats</option>
             <option value="50">50+ Seats</option>
+            <option value="100">100+ Seats</option>
           </select>
         </div>
       </div>
@@ -78,7 +81,7 @@
     <% events.forEach(function(event) { %>
       
       <!-- Dynamic Event Card -->
-      <div class="event-card card" data-category="<%= event.categoryName %>" data-seats="<%= event.availableTickets %>">
+      <div class="event-card card" data-category="<%= event.category %>" data-seats="<%= event.availableTickets %>">
         <div class="event-img">
           <div class="event-img-inner">
             <!-- Dynamically loading the event image path -->
@@ -102,7 +105,7 @@
             >
               Book Now!
             </button>
-            <span class="badge badge-red"><%= event.categoryName %></span>
+            <span class="badge badge-red"><%= event.category %></span>
             <span class="badge badge-red"><%= event.availableTickets %> Seats Left</span>
           </div>
           <p class="event-desc">

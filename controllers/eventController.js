@@ -57,8 +57,9 @@ exports.postEvents = async (req, res) => {
       if (to) filter.eventDate.$lte = new Date(to);
     }
 
-    if (minSeats) {
-      filter.availableTickets = { $gte: Number(minSeats) };
+    const parsedSeats = Number(minSeats);
+    if (minSeats && !isNaN(parsedSeats)) {
+      filter.availableTickets = { $gte: parsedSeats };
     }
 
     let events = await Event.find(filter).populate('categoryId').sort({ eventDate: 1 });
@@ -66,9 +67,9 @@ exports.postEvents = async (req, res) => {
     if (category) {
       events = events.filter(event => event.categoryId?.name === category);
     }
-      res.render('events', { 
+    res.render('events', {
       events: events.map(mapEventForView),
-      filters: req.query 
+      filters: req.query
     });
   } catch (error) {
     console.error('Get events error:', error);
@@ -104,9 +105,9 @@ exports.getEvents = async (req, res) => {
     if (category) {
       events = events.filter(event => event.categoryId?.name === category);
     }
-    res.render('events', { 
+    res.render('events', {
       events: events.map(mapEventForView),
-      filters: req.query 
+      filters: req.query
     });
   } catch (error) {
     console.error('Get events error:', error);
