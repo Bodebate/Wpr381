@@ -374,6 +374,11 @@ body {
   justify-content: center;
 }
 
+#auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
 
 /* ===================================================
    PAGE 2 — EVENTS (user view)
@@ -528,6 +533,12 @@ body {
   grid-template-columns: 80px 190px 1fr;
   overflow: hidden;
   margin-bottom: 1rem;
+}
+
+#admin-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
 }
 
 .admin-card-actions {

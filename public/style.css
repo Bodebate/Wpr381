@@ -384,6 +384,11 @@ body {
   justify-content: center;
 }
 
+#auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
 
 /* ===================================================
    PAGE 2 — EVENTS (user view)
@@ -528,6 +533,12 @@ body {
 .radio-label input {
   accent-color: var(--yellow);
   cursor: pointer;
+}
+
+#admin-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
 }
 
 .admin-event-card {
