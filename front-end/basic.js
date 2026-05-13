@@ -13,12 +13,12 @@ const state = {
 function handleRegister(e) {
     e.preventDefault();
     const payload = {
-        fullName:    (document.getElementById('reg-name').value + ' ' +
-                      document.getElementById('reg-surname').value).trim(),
-        email:       document.getElementById('reg-email').value,
+        fullName: (document.getElementById('reg-name').value + ' ' +
+            document.getElementById('reg-surname').value).trim(),
+        email: document.getElementById('reg-email').value,
         phoneNumber: document.getElementById('reg-phone').value,
-        password:    document.getElementById('reg-password').value,
-        role:        'user',
+        password: document.getElementById('reg-password').value,
+        role: 'user',
     };
     // TODO: POST /api/auth/register  { body: payload }
     // On 201: state.currentUser = response.user;
@@ -30,7 +30,7 @@ function handleRegister(e) {
 function handleLogin(e) {
     e.preventDefault();
     const payload = {
-        email:    document.getElementById('reg-email').value,
+        email: document.getElementById('reg-email').value,
         password: document.getElementById('reg-password').value,
     };
     // TODO: POST /api/auth/login  { body: payload }
@@ -45,14 +45,22 @@ function handleLogin(e) {
 // EVENTS — public
 // ─────────────────────────────────────────────
 function filterEvents() {
-    const q        = document.getElementById('events-search').value;
-    const from     = document.getElementById('filter-from').value;
-    const to       = document.getElementById('filter-to').value;
+    const q = document.getElementById('events-search').value;
+    const from = document.getElementById('filter-from').value;
+    const to = document.getElementById('filter-to').value;
     const category = document.getElementById('filter-category').value;
-    const seats    = document.getElementById('filter-seats').value;
+    const seats = document.getElementById('filter-seats').value;
     // TODO: GET /api/events?search=&from=&to=&category=&minSeats=
     //       Re-render #events-list with response data
     console.log('[STUB] Filter events:', { q, from, to, category, seats });
+}
+
+function toggleCreatePanel(id_input, self_input) {
+    const body = document.getElementById(id_input);
+    const toggle = document.getElementById(self_input);
+    const collapsed = body.style.display === "none";
+    body.style.display = collapsed ? "" : "none";
+    toggle.textContent = collapsed ? "∨" : "∧";
 }
 
 // ─────────────────────────────────────────────
@@ -77,21 +85,21 @@ function initBookingPage() {
 
 function updateTotal() {
     const price = state.pricePerTicket ||
-                  parseFloat(document.getElementById('booking-unit-price')
-                    .textContent.replace('R ', '')) || 0;
-    const qty   = Math.max(1, parseInt(document.getElementById('ticket-amount').value) || 1);
+        parseFloat(document.getElementById('booking-unit-price')
+            .textContent.replace('R ', '')) || 0;
+    const qty = Math.max(1, parseInt(document.getElementById('ticket-amount').value) || 1);
     document.getElementById('booking-total').textContent = 'R ' + (qty * price).toFixed(2);
-    document.getElementById('qty-check').style.opacity  = '1';
+    document.getElementById('qty-check').style.opacity = '1';
 }
 
 function handleBookTickets(e) {
     e.preventDefault();
     const saved = JSON.parse(sessionStorage.getItem('booking') || '{}');
-    const qty   = Math.max(1, parseInt(document.getElementById('ticket-amount').value) || 1);
+    const qty = Math.max(1, parseInt(document.getElementById('ticket-amount').value) || 1);
     const payload = {
-        userId:      state.currentUser?._id,
-        eventId:     saved.eventId,
-        quantity:    qty,
+        userId: state.currentUser?._id,
+        eventId: saved.eventId,
+        quantity: qty,
         totalAmount: +(qty * (saved.pricePerTicket || 0)).toFixed(2),
     };
     // TODO: POST /api/bookings  { body: payload }
@@ -105,13 +113,13 @@ function handleBookTickets(e) {
 function handleCreateEvent(e) {
     e.preventDefault();
     const payload = {
-        title:            document.getElementById('new-title').value,
-        eventDate:        document.getElementById('new-date').value,
-        totalCapacity:    parseInt(document.getElementById('new-capacity').value),
+        title: document.getElementById('new-title').value,
+        eventDate: document.getElementById('new-date').value,
+        totalCapacity: parseInt(document.getElementById('new-capacity').value),
         availableTickets: parseInt(document.getElementById('new-capacity').value),
-        price:            parseFloat(document.getElementById('new-price').value),
-        categoryId:       document.querySelector('input[name="new-cat"]:checked')?.value,
-        createdBy:        state.currentUser?._id,
+        price: parseFloat(document.getElementById('new-price').value),
+        categoryId: document.querySelector('input[name="new-cat"]:checked')?.value,
+        createdBy: state.currentUser?._id,
         // imageUrl: set after upload completes
     };
     // TODO: POST /api/events  { body: payload }
@@ -170,11 +178,11 @@ function fetchAvgSoldByCategory(category) {
 function handleSendEnquiry(e) {
     e.preventDefault();
     const payload = {
-        name:    document.getElementById('contact-name').value,
-        email:   document.getElementById('contact-email').value,
+        name: document.getElementById('contact-name').value,
+        email: document.getElementById('contact-email').value,
         subject: document.getElementById('contact-subject').value,
         message: document.getElementById('contact-message').value,
-        status:  'open',
+        status: 'open',
     };
     // TODO: POST /api/enquiries  { body: payload }
     // On 201: clear form, show success message
@@ -185,8 +193,8 @@ function handleSendEnquiry(e) {
 // ADMIN — ENQUIRIES
 // ─────────────────────────────────────────────
 function filterEnquiries() {
-    const from   = document.getElementById('enq-from').value;
-    const to     = document.getElementById('enq-to').value;
+    const from = document.getElementById('enq-from').value;
+    const to = document.getElementById('enq-to').value;
     const status = document.getElementById('enq-status-filter').value;
     // TODO: GET /api/enquiries?from=&to=&status=
     //       Re-render #enquiry-list
@@ -221,21 +229,32 @@ function handleDeleteAllEnquiries(e) {
 
 function handleEditEnquiry(e, enquiryId) {
     e.preventDefault();
-    const panel  = document.getElementById('enquiry-detail-panel');
+    const panel = document.getElementById('enquiry-detail-panel');
     const isOpen = panel.classList.contains('open');
     if (isOpen) {
         panel.classList.remove('open');
         return;
     }
-    // TODO: GET /api/enquiries/:id
-    //       Populate detail panel:
-    //       document.getElementById('enq-d-name').textContent    = response.name;
-    //       document.getElementById('enq-d-email').textContent   = response.email;
-    //       document.getElementById('enq-d-subject').textContent = response.subject;
-    //       document.getElementById('enq-d-created').textContent = response.createdAt;
-    //       document.getElementById('enq-d-updated').textContent = response.updatedAt;
-    //       document.getElementById('enq-d-handler').textContent = response.handledBy || '—';
-    //       document.getElementById('enq-d-message').textContent = response.message;
+    // TODO: GET /api/enquiries/:id  then populate:
+    //       document.getElementById('enq-d-name').value       = response.name;
+    //       document.getElementById('enq-d-email').value      = response.email;
+    //       document.getElementById('enq-d-subject').value    = response.subject;
+    //       document.getElementById('enq-d-created').value    = response.createdAt;
+    //       document.getElementById('enq-d-updated').value    = response.updatedAt;
+    //       document.getElementById('enq-d-handler').value    = response.handledBy || '';
+    //       document.getElementById('enq-d-message').value    = response.message;
+    //       document.getElementById('enq-panel-status').value = response.status;
     panel.classList.add('open');
     console.log('[STUB] Edit enquiry:', enquiryId);
+}
+
+function handleUpdateEnquiry(e) {
+    e.preventDefault();
+    const payload = {
+        handledBy: document.getElementById('enq-d-handler').value,
+        status: document.getElementById('enq-panel-status').value,
+    };
+    // TODO: PATCH /api/enquiries/:id  { body: payload }
+    // On 200: update the matching row in #enquiry-list, close panel
+    console.log('[STUB] Update enquiry:', payload);
 }

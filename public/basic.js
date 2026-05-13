@@ -10,7 +10,7 @@ const state = {
 // ─────────────────────────────────────────────
 // AUTH
 // ─────────────────────────────────────────────
-function handleRegister(e) {
+async function handleRegister(e) {
     e.preventDefault();
     const payload = {
         fullName:    (document.getElementById('reg-name').value + ' ' +
@@ -24,7 +24,15 @@ function handleRegister(e) {
     // On 201: state.currentUser = response.user;
     //         window.location.href = 'events.html';
     console.log('[STUB] Register:', payload);
-    window.location.href = '/events'; // server-side route
+    try{
+        const response = await axios.post(window.location.origin+"/api/userRegister",payload)
+        
+        if (response.data.redirectUrl){
+            widow.location.href= response.data.redirectUrl
+        }
+    } catch (error) {
+        console.error("registration failed",error);
+    }   
 }
 
 function handleLogin(e) {
@@ -35,10 +43,10 @@ function handleLogin(e) {
     };
     // TODO: POST /api/auth/login  { body: payload }
     // On 200: state.currentUser = response.user;
-    //         if (user.role === 'admin') window.location.href = '/admin/events';
-    //         else window.location.href = '/events';
+    //         if (user.role === 'admin') window.location.href = 'admin-events.html';
+    //         else window.location.href = 'events.html';
     console.log('[STUB] Login:', payload);
-    window.location.href = '/events'; // server-side route
+    window.location.href = 'events.html'; // ← remove once API is wired
 }
 
 // ─────────────────────────────────────────────
@@ -61,7 +69,7 @@ function filterEvents() {
 function openBooking(eventName, pricePerTicket, eventId) {
     // Store booking context so bookings.html can read it
     sessionStorage.setItem('booking', JSON.stringify({ eventId, eventName, pricePerTicket }));
-    window.location.href = `/bookings?eventId=${eventId}`;
+    window.location.href = 'bookings.html';
 }
 
 function initBookingPage() {
@@ -239,3 +247,6 @@ function handleEditEnquiry(e, enquiryId) {
     panel.classList.add('open');
     console.log('[STUB] Edit enquiry:', enquiryId);
 }
+
+document.getElementById("btn-Register").addEventListener('click',handleRegister)
+document.getElementById("btn-Login").addEventListener('click',handleLogin)
