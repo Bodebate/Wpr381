@@ -236,13 +236,13 @@ function handleEditEnquiry(e, enquiryId) {
         return;
     }
     // TODO: GET /api/enquiries/:id  then populate:
-    //       document.getElementById('enq-d-name').value     = response.name;
-    //       document.getElementById('enq-d-email').value    = response.email;
-    //       document.getElementById('enq-d-subject').value  = response.subject;
-    //       document.getElementById('enq-d-created').value  = response.createdAt;
-    //       document.getElementById('enq-d-updated').value  = response.updatedAt;
-    //       document.getElementById('enq-d-handler').value  = response.handledBy || '';
-    //       document.getElementById('enq-d-message').value  = response.message;
+    //       document.getElementById('enq-d-name').value       = response.name;
+    //       document.getElementById('enq-d-email').value      = response.email;
+    //       document.getElementById('enq-d-subject').value    = response.subject;
+    //       document.getElementById('enq-d-created').value    = response.createdAt;
+    //       document.getElementById('enq-d-updated').value    = response.updatedAt;
+    //       document.getElementById('enq-d-handler').value    = response.handledBy || '';
+    //       document.getElementById('enq-d-message').value    = response.message;
     //       document.getElementById('enq-panel-status').value = response.status;
     panel.classList.add('open');
     console.log('[STUB] Edit enquiry:', enquiryId);
