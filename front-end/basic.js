@@ -5,7 +5,17 @@
 // ─────────────────────────────────────────────
 const state = {
     currentUser: null,  // { _id, fullName, email, role }
+    pricePerTicket: 0,
+    editingEnquiryId: null,
 };
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function on(id, evt, fn) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener(evt, fn);
+}
 
 // ─────────────────────────────────────────────
 // AUTH
@@ -81,6 +91,9 @@ function initBookingPage() {
         state.pricePerTicket = saved.pricePerTicket;
         updateTotal();
     }
+
+    on('ticket-amount', 'input', updateTotal);
+    on('book-tickets-btn', 'click', handleBookTickets);
 }
 
 function updateTotal() {
@@ -110,6 +123,31 @@ function handleBookTickets(e) {
 // ─────────────────────────────────────────────
 // ADMIN — EVENTS
 // ─────────────────────────────────────────────
+function initAdminEventsPage() {
+    on('create-event-btn', 'click', handleCreateEvent);
+    on('update-event-btn', 'click', handleUpdateEvent);
+    on('image-upload-input', 'change', handleImageUpload);
+
+    // wire edit + delete on any cards already in the DOM
+    document.querySelectorAll('.edit-event-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            handleEditEvent(e, btn.dataset.id);
+        });
+    });
+    document.querySelectorAll('.delete-event-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            handleDeleteEvent(e, btn.dataset.id);
+        });
+    });
+
+    // wire Book Now buttons on admin card list
+    document.querySelectorAll('.book-now-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            openBooking(btn.dataset.name, parseFloat(btn.dataset.price), btn.dataset.id);
+        });
+    });
+}
+
 function handleCreateEvent(e) {
     e.preventDefault();
     const payload = {
@@ -129,13 +167,14 @@ function handleCreateEvent(e) {
 
 function handleUpdateEvent(e) {
     e.preventDefault();
-    const eventId = null; // TODO: track which event is being edited in state
+    const eventId = state.editingEventId || null; // TODO: track which event is being edited in state
     // TODO: PUT /api/events/:id  { body: same shape as create }
     console.log('[STUB] Update event:', eventId);
 }
 
 function handleEditEvent(e, eventId) {
     e.preventDefault();
+    state.editingEventId = eventId;
     // TODO: GET /api/events/:id
     //       Populate form fields with response data
     console.log('[STUB] Load event for edit:', eventId);
@@ -160,6 +199,19 @@ function handleImageUpload(e) {
 // ─────────────────────────────────────────────
 // ADMIN — ANALYTICS
 // ─────────────────────────────────────────────
+function initAnalyticsPage() {
+    document.querySelectorAll('.category-bookings-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+            fetchBookingsByCategory(sel.value);
+        });
+    });
+    document.querySelectorAll('.category-avg-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+            fetchAvgSoldByCategory(sel.value);
+        });
+    });
+}
+
 function fetchBookingsByCategory(category) {
     // TODO: GET /api/analytics/bookings?category=
     //       Update #stat-bookings with response.total
@@ -175,6 +227,10 @@ function fetchAvgSoldByCategory(category) {
 // ─────────────────────────────────────────────
 // CONTACT
 // ─────────────────────────────────────────────
+function initContactPage() {
+    on('send-enquiry-btn', 'click', handleSendEnquiry);
+}
+
 function handleSendEnquiry(e) {
     e.preventDefault();
     const payload = {
@@ -192,6 +248,30 @@ function handleSendEnquiry(e) {
 // ─────────────────────────────────────────────
 // ADMIN — ENQUIRIES
 // ─────────────────────────────────────────────
+function initEnquiriesPage() {
+    on('enq-from', 'change', filterEnquiries);
+    on('enq-to', 'change', filterEnquiries);
+    on('enq-status-filter', 'change', filterEnquiries);
+    on('enq-search', 'input', filterEnquiries);
+    on('bulk-close-btn', 'click', function() { handleBulkStatus('closed'); });
+    on('delete-all-enq-btn', 'click', handleDeleteAllEnquiries);
+    on('enq-panel-toggle', 'click', toggleEnquiryPanel);
+    on('enq-panel-status', 'change', function(e) {
+        handleStatusChange(e, state.editingEnquiryId);
+    });
+
+    document.querySelectorAll('.delete-enq-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            handleDeleteEnquiry(e, btn.dataset.id);
+        });
+    });
+    document.querySelectorAll('.edit-enq-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            handleEditEnquiry(e, btn.dataset.id);
+        });
+    });
+}
+
 function filterEnquiries() {
     const from = document.getElementById('enq-from').value;
     const to = document.getElementById('enq-to').value;
@@ -229,6 +309,7 @@ function handleDeleteAllEnquiries(e) {
 
 function handleEditEnquiry(e, enquiryId) {
     e.preventDefault();
+    state.editingEnquiryId = enquiryId;
     const panel = document.getElementById('enquiry-detail-panel');
     const isOpen = panel.classList.contains('open');
     if (isOpen) {
@@ -248,6 +329,10 @@ function handleEditEnquiry(e, enquiryId) {
     console.log('[STUB] Edit enquiry:', enquiryId);
 }
 
+function toggleEnquiryPanel() {
+    document.getElementById('enquiry-detail-panel').classList.remove('open');
+}
+
 function handleUpdateEnquiry(e) {
     e.preventDefault();
     const payload = {
@@ -258,3 +343,16 @@ function handleUpdateEnquiry(e) {
     // On 200: update the matching row in #enquiry-list, close panel
     console.log('[STUB] Update enquiry:', payload);
 }
+
+// ─────────────────────────────────────────────
+// BOOT — wire up whichever page we are on
+// ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+
+    if (page === 'bookings.html')     initBookingPage();
+    if (page === 'admin-events.html') initAdminEventsPage();
+    if (page === 'analytics.html')    initAnalyticsPage();
+    if (page === 'contact.html')      initContactPage();
+    if (page === 'enquiries.html')    initEnquiriesPage();
+});
