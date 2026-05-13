@@ -221,7 +221,7 @@ function loadEventForEdit(eventId) {
             endTime:       document.getElementById('new-end-time').value,
             totalCapacity: document.getElementById('new-capacity').value,
             price:         document.getElementById('new-price').value,
-            categoryId:    document.querySelector('input[name="new-cat"]:checked')?.value || ''
+            categoryId:    document.querySelector('input[name="categoryId"]:checked')?.value || ''
         };
 
         Object.entries(fields).forEach(([key, val]) => {
