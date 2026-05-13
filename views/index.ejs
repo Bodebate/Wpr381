@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
-<head><%- include('partials/head', { title: 'Home' }) %></head>
+  <head><%- include('partials/head', { title: 'Home' }) %></head>
 
   <body class="auth-page">
      <%- include('partials/nav', { navClass: 'nav-center' }) %>
+
 
     <div class="auth-card card">
       <div class="form-group">
@@ -47,10 +48,10 @@
         />
       </div>
       <div class="auth-actions">
-        <button class="btn btn-red" id="btn-Register">
+        <button class="btn btn-red" onclick="handleRegister(event)">
           Register
         </button>
-        <button class="btn btn-yellow underline" id="btn-Login">
+        <button class="btn btn-yellow underline" onclick="handleLogin(event)">
           Log In
         </button>
       </div>

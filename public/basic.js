@@ -5,7 +5,17 @@
 // ─────────────────────────────────────────────
 const state = {
     currentUser: null,  // { _id, fullName, email, role }
+    pricePerTicket: 0,
+    editingEnquiryId: null,
 };
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function on(id, evt, fn) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener(evt, fn);
+}
 
 // ─────────────────────────────────────────────
 // AUTH
@@ -13,54 +23,83 @@ const state = {
 async function handleRegister(e) {
     e.preventDefault();
     const payload = {
-        fullName:    (document.getElementById('reg-name').value + ' ' +
-                      document.getElementById('reg-surname').value).trim(),
-        email:       document.getElementById('reg-email').value,
+        firstName: document.getElementById('reg-name').value.trim(),
+        surname: document.getElementById('reg-surname').value.trim(),
+        email: document.getElementById('reg-email').value,
         phoneNumber: document.getElementById('reg-phone').value,
-        password:    document.getElementById('reg-password').value,
-        role:        'user',
+        password: document.getElementById('reg-password').value,
+        role: 'user',
     };
     // TODO: POST /api/auth/register  { body: payload }
     // On 201: state.currentUser = response.user;
     //         window.location.href = 'events.html';
-    console.log('[STUB] Register:', payload);
     try{
-        const response = await axios.post(window.location.origin+"/api/userRegister",payload)
-        
-        if (response.data.redirectUrl){
-            widow.location.href= response.data.redirectUrl
+        const response = await axios.post(window.location.origin+"/register",payload);
+        state.currentUser = response.body;
+        if(response.data.success){
+        window.location.href =response.data.redirect;
         }
+
     } catch (error) {
         console.error("registration failed",error);
-    }   
+    }
+
+    console.log('[STUB] Register:', payload);
 }
 
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
     const payload = {
-        email:    document.getElementById('reg-email').value,
+        email: document.getElementById('reg-email').value,
         password: document.getElementById('reg-password').value,
     };
     // TODO: POST /api/auth/login  { body: payload }
     // On 200: state.currentUser = response.user;
     //         if (user.role === 'admin') window.location.href = 'admin-events.html';
     //         else window.location.href = 'events.html';
+
+    try{
+        const response = await axios.post(window.location.origin+"/login",payload);
+        state.currentUser = response.body;
+        if(response.data.success){
+        window.location.href =response.data.redirect;
+        }
+
+    } catch (error) {
+        console.error("login failed",error);
+    }
+
+
     console.log('[STUB] Login:', payload);
-    window.location.href = 'events.html'; // ← remove once API is wired
 }
 
 // ─────────────────────────────────────────────
 // EVENTS — public
 // ─────────────────────────────────────────────
-function filterEvents() {
-    const q        = document.getElementById('events-search').value;
-    const from     = document.getElementById('filter-from').value;
-    const to       = document.getElementById('filter-to').value;
+async function filterEvents() {
+    const q = document.getElementById('events-search').value;
+    const from = document.getElementById('filter-from').value;
+    const to = document.getElementById('filter-to').value;
     const category = document.getElementById('filter-category').value;
-    const seats    = document.getElementById('filter-seats').value;
+    const seats = document.getElementById('filter-seats').value;
     // TODO: GET /api/events?search=&from=&to=&category=&minSeats=
     //       Re-render #events-list with response data
-    console.log('[STUB] Filter events:', { q, from, to, category, seats });
+
+    const params = new URLSearchParams({search:q, category: category, from: from, to: to, minSeats: seats}) 
+
+    console.log('[STUB] Filter events:', params.toString());
+
+    //const result = await axios.get(window.location.origin+"/filterEvents",payload);
+    window.location.href = `/events?${params.toString()}`;
+    
+}
+
+function toggleCreatePanel(id_input, self_input) {
+    const body = document.getElementById(id_input);
+    const toggle = document.getElementById(self_input);
+    const collapsed = body.style.display === "none";
+    body.style.display = collapsed ? "" : "none";
+    toggle.textContent = collapsed ? "∨" : "∧";
 }
 
 // ─────────────────────────────────────────────
@@ -69,7 +108,7 @@ function filterEvents() {
 function openBooking(eventName, pricePerTicket, eventId) {
     // Store booking context so bookings.html can read it
     sessionStorage.setItem('booking', JSON.stringify({ eventId, eventName, pricePerTicket }));
-    window.location.href = 'bookings.html';
+    window.location.href = 'bookings';
 }
 
 function initBookingPage() {
@@ -81,28 +120,35 @@ function initBookingPage() {
         state.pricePerTicket = saved.pricePerTicket;
         updateTotal();
     }
+
+    on('ticket-amount', 'input', updateTotal);
+    on('book-tickets-btn', 'click', handleBookTickets);
 }
 
 function updateTotal() {
     const price = state.pricePerTicket ||
-                  parseFloat(document.getElementById('booking-unit-price')
-                    .textContent.replace('R ', '')) || 0;
-    const qty   = Math.max(1, parseInt(document.getElementById('ticket-amount').value) || 1);
+        parseFloat(document.getElementById('booking-unit-price')
+            .textContent.replace('R ', '')) || 0;
+    const qty = Math.max(1, parseInt(document.getElementById('ticket-amount').value) || 1);
     document.getElementById('booking-total').textContent = 'R ' + (qty * price).toFixed(2);
-    document.getElementById('qty-check').style.opacity  = '1';
+    document.getElementById('qty-check').style.opacity = '1';
 }
 
-function handleBookTickets(e) {
+async function handleBookTickets(e) {
     e.preventDefault();
     const saved = JSON.parse(sessionStorage.getItem('booking') || '{}');
-    const qty   = Math.max(1, parseInt(document.getElementById('ticket-amount').value) || 1);
+    const qty = Math.max(1, parseInt(document.getElementById('ticket-amount').value) || 1);
     const payload = {
-        userId:      state.currentUser?._id,
-        eventId:     saved.eventId,
-        quantity:    qty,
+        userId: state.currentUser?._id,
+        eventId: saved.eventId,
+        quantity: qty,
         totalAmount: +(qty * (saved.pricePerTicket || 0)).toFixed(2),
     };
     // TODO: POST /api/bookings  { body: payload }
+    const response = await axios.post("",payload)
+    if (response.status === 201){
+        window.location.href= response.data.redirect
+    }
     // On 201: refresh booking history (GET /api/bookings?userId=)
     console.log('[STUB] Book tickets:', payload);
 }
@@ -110,16 +156,41 @@ function handleBookTickets(e) {
 // ─────────────────────────────────────────────
 // ADMIN — EVENTS
 // ─────────────────────────────────────────────
+function initAdminEventsPage() {
+    on('create-event-btn', 'click', handleCreateEvent);
+    on('update-event-btn', 'click', handleUpdateEvent);
+    on('image-upload-input', 'change', handleImageUpload);
+
+    // wire edit + delete on any cards already in the DOM
+    document.querySelectorAll('.edit-event-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            handleEditEvent(e, btn.dataset.id);
+        });
+    });
+    document.querySelectorAll('.delete-event-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            handleDeleteEvent(e, btn.dataset.id);
+        });
+    });
+
+    // wire Book Now buttons on admin card list
+    document.querySelectorAll('.book-now-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            openBooking(btn.dataset.name, parseFloat(btn.dataset.price), btn.dataset.id);
+        });
+    });
+}
+
 function handleCreateEvent(e) {
     e.preventDefault();
     const payload = {
-        title:            document.getElementById('new-title').value,
-        eventDate:        document.getElementById('new-date').value,
-        totalCapacity:    parseInt(document.getElementById('new-capacity').value),
+        title: document.getElementById('new-title').value,
+        eventDate: document.getElementById('new-date').value,
+        totalCapacity: parseInt(document.getElementById('new-capacity').value),
         availableTickets: parseInt(document.getElementById('new-capacity').value),
-        price:            parseFloat(document.getElementById('new-price').value),
-        categoryId:       document.querySelector('input[name="new-cat"]:checked')?.value,
-        createdBy:        state.currentUser?._id,
+        price: parseFloat(document.getElementById('new-price').value),
+        categoryId: document.querySelector('input[name="new-cat"]:checked')?.value,
+        createdBy: state.currentUser?._id,
         // imageUrl: set after upload completes
     };
     // TODO: POST /api/events  { body: payload }
@@ -129,13 +200,14 @@ function handleCreateEvent(e) {
 
 function handleUpdateEvent(e) {
     e.preventDefault();
-    const eventId = null; // TODO: track which event is being edited in state
+    const eventId = state.editingEventId || null; // TODO: track which event is being edited in state
     // TODO: PUT /api/events/:id  { body: same shape as create }
     console.log('[STUB] Update event:', eventId);
 }
 
 function handleEditEvent(e, eventId) {
     e.preventDefault();
+    state.editingEventId = eventId;
     // TODO: GET /api/events/:id
     //       Populate form fields with response data
     console.log('[STUB] Load event for edit:', eventId);
@@ -160,6 +232,19 @@ function handleImageUpload(e) {
 // ─────────────────────────────────────────────
 // ADMIN — ANALYTICS
 // ─────────────────────────────────────────────
+function initAnalyticsPage() {
+    document.querySelectorAll('.category-bookings-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+            fetchBookingsByCategory(sel.value);
+        });
+    });
+    document.querySelectorAll('.category-avg-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+            fetchAvgSoldByCategory(sel.value);
+        });
+    });
+}
+
 function fetchBookingsByCategory(category) {
     // TODO: GET /api/analytics/bookings?category=
     //       Update #stat-bookings with response.total
@@ -175,14 +260,18 @@ function fetchAvgSoldByCategory(category) {
 // ─────────────────────────────────────────────
 // CONTACT
 // ─────────────────────────────────────────────
+function initContactPage() {
+    on('send-enquiry-btn', 'click', handleSendEnquiry);
+}
+
 function handleSendEnquiry(e) {
     e.preventDefault();
     const payload = {
-        name:    document.getElementById('contact-name').value,
-        email:   document.getElementById('contact-email').value,
+        name: document.getElementById('contact-name').value,
+        email: document.getElementById('contact-email').value,
         subject: document.getElementById('contact-subject').value,
         message: document.getElementById('contact-message').value,
-        status:  'open',
+        status: 'open',
     };
     // TODO: POST /api/enquiries  { body: payload }
     // On 201: clear form, show success message
@@ -192,9 +281,33 @@ function handleSendEnquiry(e) {
 // ─────────────────────────────────────────────
 // ADMIN — ENQUIRIES
 // ─────────────────────────────────────────────
+function initEnquiriesPage() {
+    on('enq-from', 'change', filterEnquiries);
+    on('enq-to', 'change', filterEnquiries);
+    on('enq-status-filter', 'change', filterEnquiries);
+    on('enq-search', 'input', filterEnquiries);
+    on('bulk-close-btn', 'click', function() { handleBulkStatus('closed'); });
+    on('delete-all-enq-btn', 'click', handleDeleteAllEnquiries);
+    on('enq-panel-toggle', 'click', toggleEnquiryPanel);
+    on('enq-panel-status', 'change', function(e) {
+        handleStatusChange(e, state.editingEnquiryId);
+    });
+
+    document.querySelectorAll('.delete-enq-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            handleDeleteEnquiry(e, btn.dataset.id);
+        });
+    });
+    document.querySelectorAll('.edit-enq-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            handleEditEnquiry(e, btn.dataset.id);
+        });
+    });
+}
+
 function filterEnquiries() {
-    const from   = document.getElementById('enq-from').value;
-    const to     = document.getElementById('enq-to').value;
+    const from = document.getElementById('enq-from').value;
+    const to = document.getElementById('enq-to').value;
     const status = document.getElementById('enq-status-filter').value;
     // TODO: GET /api/enquiries?from=&to=&status=
     //       Re-render #enquiry-list
@@ -229,24 +342,50 @@ function handleDeleteAllEnquiries(e) {
 
 function handleEditEnquiry(e, enquiryId) {
     e.preventDefault();
-    const panel  = document.getElementById('enquiry-detail-panel');
+    state.editingEnquiryId = enquiryId;
+    const panel = document.getElementById('enquiry-detail-panel');
     const isOpen = panel.classList.contains('open');
     if (isOpen) {
         panel.classList.remove('open');
         return;
     }
-    // TODO: GET /api/enquiries/:id
-    //       Populate detail panel:
-    //       document.getElementById('enq-d-name').textContent    = response.name;
-    //       document.getElementById('enq-d-email').textContent   = response.email;
-    //       document.getElementById('enq-d-subject').textContent = response.subject;
-    //       document.getElementById('enq-d-created').textContent = response.createdAt;
-    //       document.getElementById('enq-d-updated').textContent = response.updatedAt;
-    //       document.getElementById('enq-d-handler').textContent = response.handledBy || '—';
-    //       document.getElementById('enq-d-message').textContent = response.message;
+    // TODO: GET /api/enquiries/:id  then populate:
+    //       document.getElementById('enq-d-name').value       = response.name;
+    //       document.getElementById('enq-d-email').value      = response.email;
+    //       document.getElementById('enq-d-subject').value    = response.subject;
+    //       document.getElementById('enq-d-created').value    = response.createdAt;
+    //       document.getElementById('enq-d-updated').value    = response.updatedAt;
+    //       document.getElementById('enq-d-handler').value    = response.handledBy || '';
+    //       document.getElementById('enq-d-message').value    = response.message;
+    //       document.getElementById('enq-panel-status').value = response.status;
     panel.classList.add('open');
     console.log('[STUB] Edit enquiry:', enquiryId);
 }
 
-document.getElementById("btn-Register").addEventListener('click',handleRegister)
-document.getElementById("btn-Login").addEventListener('click',handleLogin)
+function toggleEnquiryPanel() {
+    document.getElementById('enquiry-detail-panel').classList.remove('open');
+}
+
+function handleUpdateEnquiry(e) {
+    e.preventDefault();
+    const payload = {
+        handledBy: document.getElementById('enq-d-handler').value,
+        status: document.getElementById('enq-panel-status').value,
+    };
+    // TODO: PATCH /api/enquiries/:id  { body: payload }
+    // On 200: update the matching row in #enquiry-list, close panel
+    console.log('[STUB] Update enquiry:', payload);
+}
+
+// ─────────────────────────────────────────────
+// BOOT — wire up whichever page we are on
+// ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+
+    if (page === 'bookings.html')     initBookingPage();
+    if (page === 'admin-events.html') initAdminEventsPage();
+    if (page === 'analytics.html')    initAnalyticsPage();
+    if (page === 'contact.html')      initContactPage();
+    if (page === 'enquiries.html')    initEnquiriesPage();
+});

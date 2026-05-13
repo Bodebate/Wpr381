@@ -7,21 +7,21 @@ exports.getLogin = (req, res) => res.render('index');
 
 exports.postRegister = async (req, res) => {
   try {
-    const { firstName, lastName, phoneNumber, email, password } = req.body;
+    const { firstName, surname, phoneNumber, email, password } = req.body;
 
-    if (!firstName || !lastName || !email || !password) {
-      return res.status(400).send('Please fill in all required fields.');
+    if (!firstName || !surname || !email || !password) {
+      return res.status(401).send('Please fill in all required fields.');
     }
 
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
-      return res.status(400).send('An account with this email already exists.');
+      return res.status(402).send('An account with this email already exists.');
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      fullName: `${firstName} ${lastName}`.trim(),
+      fullName: `${firstName} ${surname}`.trim(),
       email,
       passwordHash,
       role: 'user',
@@ -35,10 +35,11 @@ exports.postRegister = async (req, res) => {
       role: user.role
     };
 
-    res.redirect('/events');
+    res.status(200).json({redirect:'/events',success:true});
+
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).send('Registration failed.');
+    res.status(500).json({message:'Registration failed.',success:false});
   }
 };
 
@@ -64,13 +65,13 @@ exports.postLogin = async (req, res) => {
     };
 
     if (user.role === 'admin') {
-      return res.redirect('/admin/events');
+      return res.status(200).json({redirect:'/admin/events',success:true});
     }
 
-    res.redirect('/events');
+    return res.status(200).json({redirect:'/events',success:true});
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).send('Login failed.');
+    res.status(500).json({success:false,message:'Login failed.'});
   }
 };
 

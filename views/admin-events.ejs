@@ -124,20 +124,14 @@
             <input
               type="file"
               accept="image/*"
+              id="image-upload-input"
               style="display: none"
-              onchange="handleImageUpload(event)"
-            />
-          </label>
-          <button
-            class="btn btn-yellow btn-sm"
-            onclick="handleCreateEvent(event)"
-          >
-            Create
-          </button>
-          <button
-            class="btn btn-outline btn-sm"
-            onclick="handleUpdateEvent(event)"
-          >
+             />
+        </label>
+         <button class="btn btn-yellow btn-sm" id="create-event-btn">\
+          Create
+         </button>
+          <button class="btn btn-outline btn-sm" id="update-event-btn">
             Update
           </button>
           <button
@@ -200,18 +194,12 @@
           </div>
           <div class="event-body">
             <div class="event-header">
-              <button
-                class="btn btn-yellow btn-sm"
-                onclick="handleEditEvent(event, 1)"
-              >
-                Edit
-              </button>
-              <button
-                class="btn btn-danger btn-sm"
-                onclick="handleDeleteEvent(event, 1)"
-              >
-                Delete
-              </button>
+            <button class="btn btn-yellow btn-sm edit-event-btn" data-id="1">
+              Edit
+           </button>
+           <button class="btn btn-danger btn-sm delete-event-btn" data-id="1">
+              Delete
+           </button>
               <span class="badge event-title">Mountain Lights</span>
               <button
                 class="btn btn-yellow btn-sm underline"

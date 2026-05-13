@@ -38,6 +38,46 @@ const getOrCreateCategory = async categoryName => {
   );
 };
 
+exports.postEvents = async (req, res) => {
+  try {
+    const { search, category, from, to, minSeats } = req.query;
+    const filter = { status: 'active' };
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { venue: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    if (from || to) {
+      filter.eventDate = {};
+      if (from) filter.eventDate.$gte = new Date(from);
+      if (to) filter.eventDate.$lte = new Date(to);
+    }
+
+    if (minSeats) {
+      filter.availableTickets = { $gte: Number(minSeats) };
+    }
+
+    let events = await Event.find(filter).populate('categoryId').sort({ eventDate: 1 });
+
+    if (category) {
+      events = events.filter(event => event.categoryId?.name === category);
+    }
+      res.status(200).json({success:true,redirect:"/events"})
+        
+      res.render('events', { 
+      events: events.map(mapEventForView),
+      filters: req.query 
+    });
+  } catch (error) {
+    console.error('Get events error:', error);
+    res.status(500).send('Could not load events.');
+  }
+};
+
 exports.getEvents = async (req, res) => {
   try {
     const { search, category, from, to, minSeats } = req.query;
@@ -66,8 +106,10 @@ exports.getEvents = async (req, res) => {
     if (category) {
       events = events.filter(event => event.categoryId?.name === category);
     }
-
-    res.render('events', { events: events.map(mapEventForView) });
+    res.render('events', { 
+      events: events.map(mapEventForView),
+      filters: req.query 
+    });
   } catch (error) {
     console.error('Get events error:', error);
     res.status(500).send('Could not load events.');
