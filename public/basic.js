@@ -262,9 +262,10 @@ function fetchAvgSoldByCategory(category) {
 // ─────────────────────────────────────────────
 function initContactPage() {
     on('send-enquiry-btn', 'click', handleSendEnquiry);
+    console.log("events Loaded")
 }
 
-function handleSendEnquiry(e) {
+async function handleSendEnquiry(e) {
     e.preventDefault();
     const payload = {
         name: document.getElementById('contact-name').value,
@@ -274,6 +275,11 @@ function handleSendEnquiry(e) {
         status: 'open',
     };
     // TODO: POST /api/enquiries  { body: payload }
+    const response = await axios.post('/contact',payload)
+    if (response.data.success){
+        alert("Request successfully submitted");
+        window.location.href=response.data.redirect
+    }
     // On 201: clear form, show success message
     console.log('[STUB] Send enquiry:', payload);
 }
@@ -383,9 +389,9 @@ function handleUpdateEnquiry(e) {
 document.addEventListener('DOMContentLoaded', function() {
     const page = window.location.pathname.split('/').pop() || 'index.html';
 
-    if (page === 'bookings.html')     initBookingPage();
-    if (page === 'admin-events.html') initAdminEventsPage();
-    if (page === 'analytics.html')    initAnalyticsPage();
-    if (page === 'contact.html')      initContactPage();
-    if (page === 'enquiries.html')    initEnquiriesPage();
+    if (page === 'bookings')     initBookingPage();
+    if (page === 'admin-events') initAdminEventsPage();
+    if (page === 'analytics')    initAnalyticsPage();
+    if (page === 'contact')      initContactPage();
+    if (page === 'enquiries')    initEnquiriesPage();
 });
