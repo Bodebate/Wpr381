@@ -82,7 +82,7 @@
         <div class="event-img">
           <div class="event-img-inner">
             <!-- Dynamically loading the event image path -->
-            <img src="<%= event.imageUrl || 'images/boats.jpg' %>" alt="<%= event.title %>" />
+            <img src="<%= event.imageUrl || '/images/boats.jpg' %>" alt="<%= event.title %>" />
           </div>
           <div class="event-footer">
             <span class="event-date">
@@ -98,7 +98,7 @@
             <span class="badge event-title"><%= event.title %></span>
             <button
               class="btn btn-yellow btn-sm underline"
-              onclick="openBooking('<%= event.title %>', <%= event.price || 0 %>, 1)"
+              onclick="openBooking('<%= event.title %>', <%= event.price || 0 %>, '<%= event._id %>')"
             >
               Book Now!
             </button>
