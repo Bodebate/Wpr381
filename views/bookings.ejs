@@ -55,7 +55,7 @@
             </div>
 
             <div class="purchase-actions">
-              <a class="btn btn-yellow btn-sm" href="events.html">Cancel</a>
+              <a class="btn btn-yellow btn-sm" href="/events">Cancel</a>
               <button
                class="btn btn-red btn-sm underline" id="book-tickets-btn">
                 Book Tickets ›
@@ -65,83 +65,44 @@
         </div>
 
         <!-- Right: Booking history — replace with API response -->
-        <div>
-          <div class="section-header">Booking History:</div>
-          <div id="booking-history">
-            <div class="booking-item card">
-              <span class="b-name">Mountain Lights</span>
-              <div>
-                <span class="b-key">Event Date</span>
-                <span class="b-val">01 Jul 2025</span>
-              </div>
-              <div>
-                <span class="b-key">Purchase Date</span>
-                <span class="b-val">14 Jun 2025 14:35</span>
-              </div>
-              <div>
-                <span class="b-key">Tickets</span> <span class="b-val">2</span>
-              </div>
-              <div>
-                <span class="b-key">Total Cost</span>
-                <span class="b-val">R 407.01</span>
-              </div>
-            </div>
-            <div class="booking-item card">
-              <span class="b-name">Mountain Lights</span>
-              <div>
-                <span class="b-key">Event Date</span>
-                <span class="b-val">01 Jul 2025</span>
-              </div>
-              <div>
-                <span class="b-key">Purchase Date</span>
-                <span class="b-val">14 Jun 2025 14:35</span>
-              </div>
-              <div>
-                <span class="b-key">Tickets</span> <span class="b-val">2</span>
-              </div>
-              <div>
-                <span class="b-key">Total Cost</span>
-                <span class="b-val">R 407.01</span>
-              </div>
-            </div>
-            <div class="booking-item card">
-              <span class="b-name">Mountain Lights</span>
-              <div>
-                <span class="b-key">Event Date</span>
-                <span class="b-val">01 Jul 2025</span>
-              </div>
-              <div>
-                <span class="b-key">Purchase Date</span>
-                <span class="b-val">14 Jun 2025 14:35</span>
-              </div>
-              <div>
-                <span class="b-key">Tickets</span> <span class="b-val">2</span>
-              </div>
-              <div>
-                <span class="b-key">Total Cost</span>
-                <span class="b-val">R 407.01</span>
-              </div>
-            </div>
-            <div class="booking-item card">
-              <span class="b-name">Mountain Lights</span>
-              <div>
-                <span class="b-key">Event Date</span>
-                <span class="b-val">01 Jul 2025</span>
-              </div>
-              <div>
-                <span class="b-key">Purchase Date</span>
-                <span class="b-val">14 Jun 2025 14:35</span>
-              </div>
-              <div>
-                <span class="b-key">Tickets</span> <span class="b-val">2</span>
-              </div>
-              <div>
-                <span class="b-key">Total Cost</span>
-                <span class="b-val">R 407.01</span>
-              </div>
-            </div>
+       <div>
+  <div class="section-header">Booking History:</div>
+  <div id="booking-history">
+    <% if (history && history.length > 0) { %>
+      <% history.forEach(function(item) { %>
+        
+        <!-- Dynamic Booking Card -->
+        <div class="booking-item card">
+          <span class="b-name"><%= item.eventTitle %></span>
+          <div>
+            <span class="b-key">Event Date</span>
+            <span class="b-val"><%= item.eventDate %></span>
+          </div>
+          <div>
+            <span class="b-key">Purchase Date</span>
+            <span class="b-val"><%= item.createdAt %></span>
+          </div>
+          <div>
+            <span class="b-key">Tickets</span> 
+            <span class="b-val"><%= item.quantity %></span>
+          </div>
+          <div>
+            <span class="b-key">Total Cost</span>
+            <!-- Explicitly sets R currency format and pins decimal output precision -->
+            <span class="b-val">R <%= Number(item.totalAmount).toFixed(2) %></span>
           </div>
         </div>
+
+      <% }); %>
+    <% } else { %>
+      <!-- Fallback container state if the history array is completely empty -->
+      <div class="booking-item card empty-state-card">
+        <span class="b-name">No Bookings Found</span>
+        <p class="event-desc" style="margin-top: 10px;">You have not booked any tickets to events yet.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
       </div>
     </div>
 
