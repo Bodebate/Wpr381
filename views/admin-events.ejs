@@ -78,153 +78,78 @@
       </div>
       <!-- Create / Edit Form -->
       <div class="create-panel card" id="create-panel">
+        <% if (createError) { %>
+          <div class="auth-error" style="margin-bottom:0.8rem"><%= createError %></div>
+        <% } %>
+        <form action="/admin/events" method="POST">
         <div class="create-row">
-          <input
-            class="input-std"
-            type="text"
-            placeholder="Event Name"
-            id="new-title"
-          />
-          <input
-            class="input-std"
-            type="text"
-            placeholder="Venue"
-            id="new-venue"
-          />
-          <input class="input-std" type="date" id="new-date" />
-          <input
-            class="input-std"
-            type="time"
-            placeholder="Start Time"
-            id="new-start-time"
-          />
-          <input
-            class="input-std"
-            type="time"
-            placeholder="End Time"
-            id="new-end-time"
-          />
-          <input
-            class="input-std"
-            type="number"
-            placeholder="Seat Amt."
-            id="new-capacity"
-            min="1"
-          />
-          <input
-            class="input-std"
-            type="number"
-            placeholder="Seat Price"
-            id="new-price"
-            step="0.01"
-            min="0"
-          />
-          <label class="btn btn-outline btn-sm" style="cursor: pointer">
+          <input class="input-std" type="text"   name="title"     placeholder="Event Name" id="new-title" />
+          <input class="input-std" type="text"   name="venue"     placeholder="Venue"       id="new-venue" />
+          <input class="input-std" type="date"   name="eventDate"                           id="new-date" />
+          <input class="input-std" type="time"   name="startTime" placeholder="Start Time"  id="new-start-time" />
+          <input class="input-std" type="time"   name="endTime"   placeholder="End Time"    id="new-end-time" />
+          <input class="input-std" type="number" name="totalCapacity" placeholder="Seat Amt." id="new-capacity" min="1" />
+          <input class="input-std" type="number" name="price"     placeholder="Seat Price"  id="new-price" step="0.01" min="0" />
+          <label class="btn btn-outline btn-sm" style="cursor:pointer">
             Upload Image
-            <input
-              type="file"
-              accept="image/*"
-              id="image-upload-input"
-              style="display: none"
-             />
-        </label>
-         <button class="btn btn-yellow btn-sm" id="create-event-btn">\
-          Create
-         </button>
-          <button class="btn btn-outline btn-sm" id="update-event-btn">
-            Update
-          </button>
-          <button
-            class="panel-toggle"
-            id="create-panel-toggle"
-            onclick="
-              toggleCreatePanel('create-panel-body', 'create-panel-toggle')
-            "
-            title="Collapse"
-          >
-            ∨
-          </button>
+            <input type="file" accept="image/*" id="image-upload-input" style="display:none" />
+          </label>
+          <button class="btn btn-yellow btn-sm" type="submit" id="create-event-btn">Create</button>
+          <button class="btn btn-outline btn-sm" type="button" id="update-event-btn">Update</button>
+          <button class="panel-toggle" id="create-panel-toggle" type="button"
+            onclick="toggleCreatePanel('create-panel-body', 'create-panel-toggle')" title="Collapse">∨</button>
         </div>
         <div id="create-panel-body">
-          <div class="form-group" style="margin-bottom: 0.8rem">
-            <textarea
-              class="input-std"
-              id="new-description"
-              rows="6"
-              style="resize: vertical"
-              placeholder="Event description…"
-            ></textarea>
+          <div class="form-group" style="margin-bottom:0.8rem">
+            <textarea class="input-std" name="description" id="new-description"
+              rows="6" style="resize:vertical" placeholder="Event description…"></textarea>
           </div>
           <div class="category-section">
             <span class="label">Category</span>
             <div class="radio-group">
-              <label class="radio-label"
-                ><input type="radio" name="new-cat" value="Quiet" />
-                Quiet</label
-              >
-              <label class="radio-label"
-                ><input type="radio" name="new-cat" value="Crowd" />
-                Crowd</label
-              >
-              <label class="radio-label"
-                ><input type="radio" name="new-cat" value="Indoors" />
-                Indoors</label
-              >
-              <label class="radio-label"
-                ><input type="radio" name="new-cat" value="Outdoors" checked />
-                Outdoors</label
-              >
+              <label class="radio-label"><input type="radio" name="categoryId" value="Quiet" /> Quiet</label>
+              <label class="radio-label"><input type="radio" name="categoryId" value="Crowd" /> Crowd</label>
+              <label class="radio-label"><input type="radio" name="categoryId" value="Indoors" /> Indoors</label>
+              <label class="radio-label"><input type="radio" name="categoryId" value="Outdoors" checked /> Outdoors</label>
             </div>
           </div>
         </div>
+        </form>
       </div>
 
-      <!-- Admin event list — replace with API response -->
+      <!-- Admin event list -->
       <div id="admin-events-list">
-        <div class="event-card card" data-category="Outdoors" data-seats="89">
-          <div class="event-img">
-            <div class="event-img-inner">
-              <img src="images/boats.jpg" alt="boats" />
+        <% if (events && events.length > 0) { %>
+          <% events.forEach(ev => { %>
+            <div class="event-card card" data-category="<%= ev.category %>" data-seats="<%= ev.availableTickets %>">
+              <div class="event-img">
+                <div class="event-img-inner">
+                  <img src="<%= ev.imageUrl || '/images/boats.jpg' %>" alt="<%= ev.title %>" />
+                </div>
+                <div class="event-footer">
+                  <span class="event-date"><%= ev.eventDate %> &nbsp;|&nbsp; <%= ev.startTime %> – <%= ev.endTime %></span>
+                </div>
+              </div>
+              <div class="event-body">
+                <div class="event-header">
+                  <form action="/admin/events/<%= ev._id %>/delete" method="POST" style="display:contents">
+                    <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Permanently delete this event?')">Delete</button>
+                  </form>
+                  <button class="btn btn-yellow btn-sm" type="button" data-id="<%= ev._id %>" onclick="loadEventForEdit('<%= ev._id %>')">Edit</button>
+                  <span class="badge event-title"><%= ev.title %></span>
+                  <span class="badge badge-red"><%= ev.category %></span>
+                  <span class="badge badge-red"><%= ev.availableTickets %> Seats Left</span>
+                </div>
+                <p class="event-desc"><%= ev.description %></p>
+              </div>
             </div>
-            <div class="event-footer">
-              <span class="event-date"
-                >11 July 2026 &nbsp;|&nbsp; 08:00 – 18:30</span
-              >
-            </div>
-          </div>
-          <div class="event-body">
-            <div class="event-header">
-            <button class="btn btn-yellow btn-sm edit-event-btn" data-id="1">
-              Edit
-           </button>
-           <button class="btn btn-danger btn-sm delete-event-btn" data-id="1">
-              Delete
-           </button>
-              <span class="badge event-title">Mountain Lights</span>
-              <button
-                class="btn btn-yellow btn-sm underline"
-                onclick="openBooking('Mountain Lights', 17.53, 1)"
-              >
-                Book Now!
-              </button>
-              <span class="badge badge-red">Outdoors</span>
-              <span class="badge badge-red">89 Seats Left</span>
-            </div>
-            <p class="event-desc">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-              luctus blandit volutpat. Curabitur feugiat orci enim, et malesuada
-              nunc cursus vitae. Suspendisse blandit, nisl eu aliquam pharetra,
-              odio lacus imperdiet nunc, eget fermentum augue. <br /><br />Lorem
-              ipsum dolor sit amet, consectetur adipiscing elit. Integer luctus
-              blandit volutpat. Curabitur feugiat orci enim, et malesuada nunc
-              cursus vitae. Suspendisse blandit, nisl eu aliquam pharetra, odio
-              lacus imperdiet nunc, eget fermentum augue.
-            </p>
-          </div>
-        </div>
+          <% }) %>
+        <% } else { %>
+          <div class="no-events card"><p>No events found.</p></div>
+        <% } %>
       </div>
     </div>
 
-    <script src="basic.js"></script>
+    <script src="/basic.js"></script>
   </body>
 </html>

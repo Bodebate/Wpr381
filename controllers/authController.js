@@ -3,19 +3,19 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 
-exports.getLogin = (req, res) => res.render('index');
+exports.getLogin = (req, res) => res.render('index', { error: null });
 
 exports.postRegister = async (req, res) => {
   try {
     const { firstName, surname, phoneNumber, email, password } = req.body;
 
     if (!firstName || !surname || !email || !password) {
-      return res.status(401).send('Please fill in all required fields.');
+      return res.render('index', { error: 'Please fill in all required fields.' });
     }
 
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
-      return res.status(402).send('An account with this email already exists.');
+      return res.render('index', { error: 'An account with this email already exists.' });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -35,11 +35,11 @@ exports.postRegister = async (req, res) => {
       role: user.role
     };
 
-    res.status(200).json({redirect:'/events',success:true});
+    res.redirect('/events');
 
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({message:'Registration failed.',success:false});
+    res.render('index', { error: 'Registration failed. Please try again.' });
   }
 };
 
@@ -49,12 +49,12 @@ exports.postLogin = async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
-      return res.status(401).send('Invalid email or password.');
+      return res.render('index', { error: 'Invalid email or password.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
-      return res.status(401).send('Invalid email or password.');
+      return res.render('index', { error: 'Invalid email or password.' });
     }
 
     req.session.user = {
@@ -65,13 +65,13 @@ exports.postLogin = async (req, res) => {
     };
 
     if (user.role === 'admin') {
-      return res.status(200).json({redirect:'/admin/events',success:true});
+      return res.redirect('/admin/events');
     }
 
-    return res.status(200).json({redirect:'/events',success:true});
+    return res.redirect('/events');
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({success:false,message:'Login failed.'});
+    res.render('index', { error: 'Login failed. Please try again.' });
   }
 };
 

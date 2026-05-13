@@ -361,6 +361,16 @@ body {
   margin: 5% auto;
 }
 
+.auth-error {
+  background: var(--bright-red);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius_4);
+  border-left: 3px solid #fff;
+  letter-spacing: 0.05em;
+}
+
 .auth-actions {
   display: flex;
   gap: 0.8rem;

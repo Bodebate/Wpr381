@@ -106,9 +106,7 @@ function toggleCreatePanel(id_input, self_input) {
 // BOOKINGS
 // ─────────────────────────────────────────────
 function openBooking(eventName, pricePerTicket, eventId) {
-    // Store booking context so bookings.html can read it
-    sessionStorage.setItem('booking', JSON.stringify({ eventId, eventName, pricePerTicket }));
-    window.location.href = 'bookings';
+    window.location.href = '/bookings?eventId=' + eventId;
 }
 
 function initBookingPage() {
@@ -157,26 +155,11 @@ async function handleBookTickets(e) {
 // ADMIN — EVENTS
 // ─────────────────────────────────────────────
 function initAdminEventsPage() {
-    on('create-event-btn', 'click', handleCreateEvent);
-    on('update-event-btn', 'click', handleUpdateEvent);
     on('image-upload-input', 'change', handleImageUpload);
 
-    // wire edit + delete on any cards already in the DOM
     document.querySelectorAll('.edit-event-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
             handleEditEvent(e, btn.dataset.id);
-        });
-    });
-    document.querySelectorAll('.delete-event-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            handleDeleteEvent(e, btn.dataset.id);
-        });
-    });
-
-    // wire Book Now buttons on admin card list
-    document.querySelectorAll('.book-now-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            openBooking(btn.dataset.name, parseFloat(btn.dataset.price), btn.dataset.id);
         });
     });
 }
@@ -211,6 +194,49 @@ function handleEditEvent(e, eventId) {
     // TODO: GET /api/events/:id
     //       Populate form fields with response data
     console.log('[STUB] Load event for edit:', eventId);
+}
+
+function loadEventForEdit(eventId) {
+    const card = document.querySelector(`[data-id="${eventId}"]`)?.closest('.event-card');
+    if (!card) return;
+
+    state.editingEventId = eventId;
+
+    document.getElementById('new-title').value       = card.querySelector('.event-title')?.textContent.trim() || '';
+    document.getElementById('new-description').value = card.querySelector('.event-desc')?.textContent.trim() || '';
+
+    const updateBtn = document.getElementById('update-event-btn');
+    updateBtn.onclick = function(e) {
+        e.preventDefault();
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/events/${eventId}/update`;
+
+        const fields = {
+            title:         document.getElementById('new-title').value,
+            description:   document.getElementById('new-description').value,
+            venue:         document.getElementById('new-venue').value,
+            eventDate:     document.getElementById('new-date').value,
+            startTime:     document.getElementById('new-start-time').value,
+            endTime:       document.getElementById('new-end-time').value,
+            totalCapacity: document.getElementById('new-capacity').value,
+            price:         document.getElementById('new-price').value,
+            categoryId:    document.querySelector('input[name="new-cat"]:checked')?.value || ''
+        };
+
+        Object.entries(fields).forEach(([key, val]) => {
+            const input = document.createElement('input');
+            input.type  = 'hidden';
+            input.name  = key;
+            input.value = val;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    document.getElementById('create-panel').scrollIntoView({ behavior: 'smooth' });
 }
 
 function handleDeleteEvent(e, eventId) {
@@ -387,11 +413,11 @@ function handleUpdateEnquiry(e) {
 // BOOT — wire up whichever page we are on
 // ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-    const page = window.location.pathname.split('/').pop() || 'index.html';
+    const path = window.location.pathname;
 
-    if (page === 'bookings')     initBookingPage();
-    if (page === 'admin-events') initAdminEventsPage();
-    if (page === 'analytics')    initAnalyticsPage();
-    if (page === 'contact')      initContactPage();
-    if (page === 'enquiries')    initEnquiriesPage();
+    if (path === '/bookings')       initBookingPage();
+    if (path.startsWith('/admin/events')) initAdminEventsPage();
+    if (path === '/admin/analytics') initAnalyticsPage();
+    if (path === '/contact')        initContactPage();
+    if (path === '/admin/enquiries') initEnquiriesPage();
 });

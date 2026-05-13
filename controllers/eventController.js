@@ -66,8 +66,6 @@ exports.postEvents = async (req, res) => {
     if (category) {
       events = events.filter(event => event.categoryId?.name === category);
     }
-      res.status(200).json({success:true,redirect:"/events"})
-        
       res.render('events', { 
       events: events.map(mapEventForView),
       filters: req.query 
@@ -119,7 +117,7 @@ exports.getEvents = async (req, res) => {
 exports.getAdminEvents = async (req, res) => {
   try {
     const events = await Event.find().populate('categoryId').sort({ createdAt: -1 });
-    res.render('admin-events', { events: events.map(mapEventForView) });
+    res.render('admin-events', { events: events.map(mapEventForView), createError: null });
   } catch (error) {
     console.error('Get admin events error:', error);
     res.status(500).send('Could not load admin events.');
@@ -149,8 +147,12 @@ exports.createEvent = async (req, res) => {
 
     res.redirect('/admin/events');
   } catch (error) {
-    console.error('Create event error:', error);
-    res.status(500).send('Could not create event.');
+    console.error('Create event error:', error.message);
+    const events = await Event.find().populate('categoryId').sort({ createdAt: -1 });
+    res.render('admin-events', {
+      events: events.map(mapEventForView),
+      createError: error.message
+    });
   }
 };
 
