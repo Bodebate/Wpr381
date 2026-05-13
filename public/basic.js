@@ -145,7 +145,7 @@ async function handleBookTickets(e) {
         totalAmount: +(qty * (saved.pricePerTicket || 0)).toFixed(2),
     };
     // TODO: POST /api/bookings  { body: payload }
-    const response = await axios.post("",payload)
+    const response = await axios.post("/bookings",payload)
     if (response.status === 201){
         window.location.href= response.data.redirect
     }
