@@ -14,7 +14,7 @@ exports.postEnquiry = async (req, res) => {
       status: 'open'
     });
 
-    res.redirect('/contact');
+    res.status(200).json({redirect:'/contact',success:true});
   } catch (error) {
     console.error('Post enquiry error:', error);
     res.status(500).send('Could not send enquiry.');
