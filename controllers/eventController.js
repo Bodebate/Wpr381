@@ -117,8 +117,38 @@ exports.getEvents = async (req, res) => {
 
 exports.getAdminEvents = async (req, res) => {
   try {
-    const events = await Event.find().populate('categoryId').sort({ createdAt: -1 });
-    res.render('admin-events', { events: events.map(mapEventForView), createError: null });
+    const { search, category, from, to, minSeats } = req.query;
+    const filter = {};
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { venue: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    if (from || to) {
+      filter.eventDate = {};
+      if (from) filter.eventDate.$gte = new Date(from);
+      if (to) filter.eventDate.$lte = new Date(to);
+    }
+
+    const parsedSeats = Number(minSeats);
+    if (minSeats && !isNaN(parsedSeats)) {
+      filter.availableTickets = { $gte: parsedSeats };
+    }
+
+    let events = await Event.find(filter).populate('categoryId').sort({ createdAt: -1 });
+
+    if (category) {
+      events = events.filter(ev => ev.categoryId?.name === category);
+    }
+
+    res.render('admin-events', {
+      events: events.map(mapEventForView),
+      createError: null
+    });
   } catch (error) {
     console.error('Get admin events error:', error);
     res.status(500).send('Could not load admin events.');

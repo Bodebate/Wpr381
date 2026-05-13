@@ -90,7 +90,8 @@ async function filterEvents() {
     console.log('[STUB] Filter events:', params.toString());
 
     //const result = await axios.get(window.location.origin+"/filterEvents",payload);
-    window.location.href = `/events?${params.toString()}`;
+    const base = window.location.pathname.startsWith('/admin') ? '/admin/events' : '/events';
+    window.location.href = `${base}?${params.toString()}`;
 
 }
 
