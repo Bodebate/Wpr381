@@ -14,7 +14,7 @@ exports.postEnquiry = async (req, res) => {
       status: 'open'
     });
 
-    res.status(200).json({redirect:'/contact',success:true});
+    res.status(200).json({ redirect: '/contact', success: true });
   } catch (error) {
     console.error('Post enquiry error:', error);
     res.status(500).send('Could not send enquiry.');
@@ -23,8 +23,17 @@ exports.postEnquiry = async (req, res) => {
 
 exports.getAdminEnquiries = async (req, res) => {
   try {
-    const { status, from, to } = req.query;
+    const { search, status, from, to } = req.query;
     const filter = {};
+
+    if (search) {
+      filter.$or = [
+        { subject: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { message: { $regex: search, $options: 'i' } }
+      ];
+    }
 
     if (status) filter.status = status;
 
