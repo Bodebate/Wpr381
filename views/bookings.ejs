@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head><%- include('partials/head', { title: 'Bookings' }) %></head>
+  <body>
+       <%- include('partials/nav', { navLinks: [
+    { href: '/contact',  label: 'Contact' },
+    { href: '/events',   label: 'Events' },
+    { href: '/logout',   label: 'Sign Out', cls: 'nav-signout' }
+  ]}) %>
+
+    <div class="page-content">
+      <div class="bookings-wrap">
+        <!-- Left: Purchase panel -->
+        <div>
+          <div class="purchase-panel card">
+            <div class="purchase-label">Purchase Tickets:</div>
+            <div class="purchase-event-name" id="booking-event-name">
+              <%= booking ? booking.eventName : '—' %>
+            </div>
+
+            <div class="purchase-row">
+              <span>Price per Ticket:</span>
+              <span id="booking-unit-price">R <%= booking ? Number(booking.pricePerTicket).toFixed(2) : '0.00' %></span>
+            </div>
+
+            <div class="purchase-row">
+              <span>Amount:</span>
+              <div style="display: flex; align-items: center; gap: 0.5rem">
+                <input
+                  class="amount-input"
+                  type="number"
+                  id="ticket-amount"
+                  value="1"
+                  min="1"
+                  oninput="updateTotal()"
+                />
+                <svg
+                  id="qty-check"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#6ef06e"
+                  stroke-width="2.5"
+                  style="opacity: 0; transition: opacity 0.2s"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="purchase-total">
+              <span>Total Cost:</span>
+              <span id="booking-total">R 0.00</span>
+            </div>
+
+            <div class="purchase-actions">
+              <a class="btn btn-yellow btn-sm" href="/events">Cancel</a>
+              <% if (booking) { %>
+              <form action="/bookings" method="POST" style="display:contents">
+                <input type="hidden" name="eventId"     value="<%= booking.eventId %>" />
+                <input type="hidden" name="quantity"    id="form-qty" value="1" />
+                <input type="hidden" name="totalAmount" id="form-total" value="<%= booking.pricePerTicket %>" />
+                <button class="btn btn-red btn-sm underline" type="submit"
+                  onclick="syncForm()">Book Tickets ›</button>
+              </form>
+              <% } else { %>
+              <a class="btn btn-red btn-sm underline" href="/events">Pick an Event</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Booking history — replace with API response -->
+       <div>
+  <div class="section-header">Booking History:</div>
+  <div id="booking-history">
+    <% if (history && history.length > 0) { %>
+      <% history.forEach(function(item) { %>
+        
+        <!-- Dynamic Booking Card -->
+        <div class="booking-item card">
+          <span class="b-name"><%= item.eventTitle %></span>
+          <div>
+            <span class="b-key">Event Date</span>
+            <span class="b-val"><%= item.eventDate %></span>
+          </div>
+          <div>
+            <span class="b-key">Purchase Date</span>
+            <span class="b-val"><%= item.createdAt %></span>
+          </div>
+          <div>
+            <span class="b-key">Tickets</span> 
+            <span class="b-val"><%= item.quantity %></span>
+          </div>
+          <div>
+            <span class="b-key">Total Cost</span>
+            <!-- Explicitly sets R currency format and pins decimal output precision -->
+            <span class="b-val">R <%= Number(item.totalAmount).toFixed(2) %></span>
+          </div>
+        </div>
+
+      <% }); %>
+    <% } else { %>
+      <!-- Fallback container state if the history array is completely empty -->
+      <div class="booking-item card empty-state-card">
+        <span class="b-name">No Bookings Found</span>
+        <p class="event-desc" style="margin-top: 10px;">You have not booked any tickets to events yet.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+      </div>
+    </div>
+
+    <script src="/basic.js"></script>
+    <script>
+      function syncForm() {
+        const qty   = parseInt(document.getElementById('ticket-amount').value) || 1;
+        const price = parseFloat(document.getElementById('booking-unit-price').textContent.replace('R ', '')) || 0;
+        document.getElementById('form-qty').value   = qty;
+        document.getElementById('form-total').value = (qty * price).toFixed(2);
+      }
+    </script>
+  </body>
+</html>

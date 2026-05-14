@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head><%- include('partials/head', { title: 'Contact' }) %></head>
+  <body>
+       <%- include('partials/nav', { navLinks: [
+    { href: '/bookings', label: 'Bookings' },
+    { href: '/events',   label: 'Events' },
+    { href: '/logout',   label: 'Sign Out', cls: 'nav-signout' }
+  ]}) %>
+
+    <div class="page-content">
+      <div class="contact-wrap card">
+        <div class="contact-fields">
+          <div class="form-group">
+            <label>Name</label>
+            <input
+              class="input-std"
+              type="text"
+              id="contact-name"
+              autocomplete="name"
+            />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              class="input-std"
+              type="email"
+              id="contact-email"
+              autocomplete="email"
+            />
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <input class="input-std" type="text" id="contact-subject" />
+          </div>
+          <div class="form-group vert">
+            <label>Message</label>
+            <textarea
+              class="input-std"
+              id="contact-message"
+              rows="4"
+              style="resize: vertical"
+            ></textarea>
+          </div>
+          <button class="btn btn-yellow underline" id="send-enquiry-btn">
+                Send Enquiry ›
+          </button>
+        </div>
+
+        <div class="contact-info">
+          <p>
+            Please remember to be as detailed as possible to give us the best
+            chance of being able to assist you.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="basic.js"></script>
+  </body>
+</html>
